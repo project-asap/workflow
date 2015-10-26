@@ -1,0 +1,126 @@
+/* Move down content because we have a fixed navbar that is 50px tall */
+body {
+    padding-top: 50px;
+}
+
+.navbar-fixed-top {
+    border: 0;
+}
+
+.sidebar {
+    position: fixed;
+    top: 51px;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    display: block;
+    padding: 0 20px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: #f5f5f5;
+    border-right: 1px solid #eee;
+}
+
+.nav-sidebar {
+    margin-right: -21px; /* 20px padding + 1px border */
+    margin-bottom: 20px;
+    margin-left: -20px;
+}
+.nav-sidebar > li > a {
+    padding-right: 20px;
+    padding-left: 20px;
+}
+.nav-sidebar > .active > a,
+.nav-sidebar > .active > a:hover,
+.nav-sidebar > .active > a:focus {
+    color: #fff;
+    background-color: #428bca;
+}
+
+.main {
+    padding: 20px;
+}
+
+.main {
+    padding-right: 40px;
+    padding-left: 40px;
+}
+
+#wlBoard {
+    width: 1000px;
+    height: 600px;
+}
+
+label {
+    font-weight: normal;
+}
+
+#nodeTitle, #taskTitle {
+    margin-left: 15px;
+    margin-bottom: 15px;
+    padding-left: 15px;
+    width: 200px;
+}
+
+#tasksBoard {
+    width: 320px;
+    height: 200px;
+    border: 1px rgb(238, 238, 238) solid;
+    margin-bottom: 5px;
+    background-color: white;
+}
+
+#metadataEditor {
+    border-color: rgb(238, 238, 238);
+    width: 320px;
+    height: 200px;
+}
+
+.node .rect {
+    stroke: black;
+    fill: white;
+    stroke-width: 1.5px;
+}
+.node.circle .rect {
+    stroke: none;
+    fill: none;
+}
+.node.selected .rect {
+    stroke: #2196F3;
+}
+.node.selected.circle .rect {
+    stroke: none;
+}
+
+.ellipse {
+    stroke: black;
+    fill: none;
+    stroke-width: 1px;
+}
+.node.circle .ellipse {
+    fill: white;
+    stroke-width: 1.5px;
+}
+.node.rect .ellipse {
+    stroke-width: 0;
+}
+.node.selected.circle .ellipse {
+    stroke: #2196F3;
+}
+
+.link {
+    stroke: black;
+    stroke-width: 1.5px;
+}
+
+.link.dashed {
+    stroke-dasharray: 0,2 1;
+}
+
+.link.selected {
+    stroke: #2196F3;
+}
+
+.hide {
+    display: none;
+}

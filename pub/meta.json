@@ -1,0 +1,42 @@
+{
+  "nodes": [
+    {
+      "id": "NUMBER",
+      "taskIds": []
+    }
+  ],
+  "edges": [
+    {
+      "sourceId": "NUMBER",
+      "targetId": "NUMBER"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "NUMBER",
+      "nodeId": "NUMBER",
+      "operator": {
+        "constraints": {
+          "input": {
+            "number": "NUMBER"
+          },
+          "input0": {
+            "type": "STRING"
+          },
+          "output": {
+            "number": "NUMBER"
+          },
+          "output0": {
+            "type": "STRING"
+          },
+          "opSpecification": {
+            "algorithm": {
+              "name": "STRING"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "taskLinks": []
+}

@@ -1,0 +1,104 @@
+{
+  "name": "workflow",
+  "children": [
+    {
+      "name": "nodes",
+      "children": [
+        {
+          "name": "id: NUMBER"
+        },
+        {
+          "name": "taskIds: ARRAY"
+        }
+      ]
+    },
+    {
+      "name": "edges",
+      "children": [
+        {
+          "name": "sourceId: NUMBER"
+        },
+        {
+          "name": "targetId: NUMBER"
+        }
+      ]
+    },
+    {
+      "name": "tasks",
+      "children": [
+        {
+          "name": "id: NUMBER"
+        },
+        {
+          "name": "nodeId: NUMBER"
+        },
+        {
+          "name": "operator",
+          "children": [
+            {
+              "name": "constraints",
+              "children": [
+                {
+                  "name": "input",
+                  "children": [
+                    {
+                      "name": "number: NUMBER"
+                    }
+                  ]
+                },
+                {
+                  "name": "input0",
+                  "children": [
+                    {
+                      "name": "type: STRING"
+                    }
+                  ]
+                },
+                {
+                  "name": "output",
+                  "children": [
+                    {
+                      "name": "number: NUMBER"
+                    }
+                  ]
+                },
+                {
+                  "name": "output0",
+                  "children": [
+                    {
+                      "name": "type: STRING"
+                    }
+                  ]
+                },
+                {
+                  "name": "opSpecification",
+                  "children": [
+                    {
+                      "name": "algorithm",
+                      "children": [
+                        {
+                          "name": "name: STRING"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "taskLinks",
+      "children": [
+        {
+          "name": "sourceTaskId: NUMBER"
+        },
+        {
+          "name": "targetTaskId: NUMBER"
+        }
+      ]
+    }
+  ]
+}

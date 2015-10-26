@@ -1,0 +1,76 @@
+extends layout
+append stylesheet
+
+  link(href='css/main.css', rel='stylesheet', media='screen')
+append content
+  nav.navbar.navbar-inverse.navbar-fixed-top
+    div.container-fluid
+      div.navbar-header
+        a.navbar-brand(href="#")
+      div.navbar-collapse.collapse
+        ul.nav.navbar-right.navbar-nav
+          li
+            a#analyse(href="#") Analyse
+          li
+            a#optimise(href="#") Optimise
+        ul.nav.navbar-right.navbar-nav
+          li
+            a#newwl(href="#") New workflow
+          li
+            a#loadwl(href="#") Load workflow
+            input#uploadfile(type='file', style='display: none;')
+          li
+            a#savewl(href="#") Save workflow
+  div.container-fluid
+    div.row
+      div.sidebar.col-md-3
+        ul.nav.nav-sidebar
+          li
+            a#adddatastore(href="#") Add datastore
+          li
+            a#addnode(href="#") Add node
+          li
+            a#addlink(href="#") Add links
+        div#node.hide
+          div#nodeName
+            label(for="nodeTitle") Node title:
+            input#nodeTitle
+          div#tasksBoard
+          ul.nav.nav-sidebar
+            li
+              a#addTask(href="#") Add task
+          ul#libraryOperators.nav.nav-sidebar.hide
+            li
+              a#filterJoin(href="#") Filter Join
+            li
+              a#groupBySort(href="#") groupBy Sort
+            li
+              a#PeakDetection(href="#") PeakDetection
+            li
+              a#tfIdf(href="#") Tf-Idf
+            li
+              a#kMeans(href="#") k-Means
+            li
+              a#filter(href="#") filter
+            li
+              a#calc(href="#") calc
+            li
+              a#createNewTask(href="#") Create new
+          div#taskName.hide
+            label(for="taskTitle") Task title:
+            input#taskTitle
+          div#metadata.hide
+            div
+              label(for="metadata") Meta Data:
+            div#metadataTree.hide
+            div
+              textarea#metadataEditor
+      div.main.col-md-9.col-md-offset-3
+        div#wlBoard
+append javascript
+  script(src='js/hjson.min.js')
+  script(src='js/d3.js')
+  script(src='js/FileSaver.js')
+  script(src='js/graph.js')
+  //script(src='js/indented_tree.js')
+  script(src='js/main.js')

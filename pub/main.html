@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>D3 workflow constructor</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="img/favicon.png" rel="icon" type="image/png">
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="css/bootstrap-theme.min.css" rel="stylesheet" media="screen">
+    <link href="css/base.css" rel="stylesheet" media="screen">
+    <link href="css/main.css" rel="stylesheet" media="screen">
+  </head>
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header"><a href="#" class="navbar-brand"></a></div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-right navbar-nav">
+            <li><a id="analyse" href="#">Analyse</a></li>
+            <li><a id="optimise" href="#">Optimise</a></li>
+          </ul>
+          <ul class="nav navbar-right navbar-nav">
+            <li><a id="newwl" href="#">New workflow</a></li>
+            <li><a id="loadwl" href="#">Load workflow</a>
+              <input id="uploadfile" type="file" style="display: none;">
+            </li>
+            <li><a id="savewl" href="#">Save workflow</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="sidebar col-md-3">
+          <ul class="nav nav-sidebar">
+            <li><a id="adddatastore" href="#">Add datastore</a></li>
+            <li><a id="addnode" href="#">Add node</a></li>
+            <li><a id="addlink" href="#">Add links</a></li>
+          </ul>
+          <div id="node" class="hide">
+            <div id="nodeName">
+              <label for="nodeTitle">Node title:</label>
+              <input id="nodeTitle">
+            </div>
+            <div id="tasksBoard"></div>
+            <ul class="nav nav-sidebar">
+              <li><a id="addTask" href="#">Add task</a></li>
+            </ul>
+            <ul id="libraryOperators" class="nav nav-sidebar hide">
+              <li><a id="filterJoin" href="#">Filter Join</a></li>
+              <li><a id="groupBySort" href="#">groupBy Sort</a></li>
+              <li><a id="PeakDetection" href="#">PeakDetection</a></li>
+              <li><a id="tfIdf" href="#">Tf-Idf</a></li>
+              <li><a id="kMeans" href="#">k-Means</a></li>
+              <li><a id="filter" href="#">filter</a></li>
+              <li><a id="calc" href="#">calc</a></li>
+              <li><a id="createNewTask" href="#">Create new</a></li>
+            </ul>
+            <div id="taskName" class="hide">
+              <label for="taskTitle">Task title:</label>
+              <input id="taskTitle">
+            </div>
+            <div id="metadata" class="hide">
+              <div>
+                <label for="metadata">Meta Data:</label>
+              </div>
+              <div id="metadataTree" class="hide"></div>
+              <div>
+                <textarea id="metadataEditor"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="main col-md-9 col-md-offset-3">
+          <div id="wlBoard"></div>
+        </div>
+      </div>
+    </div>
+    <script src="js/jquery-1.11.3.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/hjson.min.js"></script>
+    <script src="js/d3.js"></script>
+    <script src="js/FileSaver.js"></script>
+    <script src="js/graph.js"></script>
+    <!--script(src='js/indented_tree.js')-->
+    <script src="js/main.js"></script>
+  </body>
+</html>
