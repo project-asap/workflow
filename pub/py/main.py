@@ -98,6 +98,10 @@ def optimise(wl):
         print moved
     return wl
 
+def execute(wl):
+
+    return wl
+
 def main(argv):
     fl = open('workflow', 'r')
     wl = yaml.safe_load(fl)

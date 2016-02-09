@@ -4,7 +4,14 @@
       "id": 0,
       "name": "tweets",
       "class": "circle",
-      "x": 300,
+      "x": 200,
+      "y": 100,
+      "fixed": true
+    },
+    {
+      "id": 1,
+      "name": "buffer",
+      "x": 200,
       "y": 200,
       "fixed": true
     },
@@ -17,7 +24,14 @@
     },
     {
       "id": 3,
-      "name": "calc&conv",
+      "name": "calcSent",
+      "x": 200,
+      "y": 300,
+      "fixed": true
+    },
+    {
+      "id": 15,
+      "name": "convDate",
       "x": 300,
       "y": 300,
       "fixed": true
@@ -108,12 +122,22 @@
     {
       "id": 0,
       "sourceId": 0,
-      "targetId": 3,
+      "targetId": 1,
       "class": "dashed"
+    },
+    {
+      "id": 1,
+      "sourceId": 1,
+      "targetId": 3
     },
     {
       "id": 2,
       "sourceId": 3,
+      "targetId": 15
+    },
+    {
+      "id": 14,
+      "sourceId": 15,
       "targetId": 2
     },
     {
@@ -197,7 +221,6 @@
         }
       }
     },
-
     {
       "id": 1,
       "name": "reviews",
@@ -293,53 +316,6 @@
                   {
                     "calc_attr": "sentiment",
                     "calc_expression": "analyse(text)"
-                  }
-                ]
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "id": 15,
-      "name": "convDate",
-      "class": "circle",
-      "nodeId": 3,
-      "json": {
-        "calc": {
-          "constraints": {
-            "input": {
-              "data_info": {
-                "attributes": [
-                  "text",
-                  "coord",
-                  "timestamp",
-                  "tag",
-                  "sentiment"
-                ]
-              }
-            },
-            "output": {
-              "data_info": {
-                "attributes": [
-                  "tag",
-                  "sentiment",
-                  "region",
-                  "date"
-                ]
-              }
-            },
-            "op_specification": {
-              "algorithm": {
-                "calc": [
-                  {
-                    "calc_attr": "region",
-                    "calc_expression": "convert(coord)"
-                  },
-                  {
-                    "calc_attr": "date",
-                    "calc_expression": "convert(timestamp)"
                   }
                 ]
               }
@@ -771,6 +747,60 @@
           }
         }
       }
+    },
+    {
+      "id": 15,
+      "name": "convDate",
+      "class": "circle",
+      "nodeId": 15,
+      "json": {
+        "calc": {
+          "constraints": {
+            "input": {
+              "data_info": {
+                "attributes": [
+                  "text",
+                  "coord",
+                  "timestamp",
+                  "tag",
+                  "sentiment"
+                ]
+              }
+            },
+            "output": {
+              "data_info": {
+                "attributes": [
+                  "tag",
+                  "sentiment",
+                  "region",
+                  "date"
+                ]
+              }
+            },
+            "op_specification": {
+              "algorithm": {
+                "calc": [
+                  {
+                    "calc_attr": "region",
+                    "calc_expression": "convert(coord)"
+                  },
+                  {
+                    "calc_attr": "date",
+                    "calc_expression": "convert(timestamp)"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": 16,
+      "name": "buffer",
+      "class": "circle",
+      "nodeId": 1,
+      "json": {}
     }
   ],
   "taskLinks": [
