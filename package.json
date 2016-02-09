@@ -1,6 +1,6 @@
 {
-	"name": "d3-workflow",
-	"description": "workflow manipulation",
+	"name": "WMT",
+	"description": "Workflow Management Tool",
 	"contributors": [
 		{
 			"name": "Maxim Filatov",
@@ -11,10 +11,10 @@
 	"version": "1.0.0",
 	"repository": {
 		"type": "git",
-		"url": "http://github.com/petywilo/d3-workflow.git"
+		"url": "https://github.com/project-asap/workflow.git"
 	},
 	"bugs": {
-		"url": "http://github.com/petywilo/d3-workflow/issues",
+		"url": "https://github.com/project-asap/workflow/issues",
 		"email": "maxim.filatov@unige.ch"
 	},
 	"engine": "node >= 0.12.2",

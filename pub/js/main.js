@@ -490,7 +490,8 @@ $(document).ready(function() {
       success: function(data, textStatus, jqXHR) {
         var newWorkflow;
         newWorkflow = JSON.parse(data);
-        return newWorkflow.taskLinks = newWorkflow.taskLinks || [];
+        newWorkflow.taskLinks = newWorkflow.taskLinks || [];
+        return openWorkflow(newWorkflow);
       },
       error: function(jqXHR, textStatus, errorThrown) {
         return console.log(textStatus);
@@ -512,7 +513,8 @@ $(document).ready(function() {
       success: function(data, textStatus, jqXHR) {
         var newWorkflow;
         newWorkflow = JSON.parse(data);
-        return newWorkflow.taskLinks = newWorkflow.taskLinks || [];
+        newWorkflow.taskLinks = newWorkflow.taskLinks || [];
+        return openWorkflow(newWorkflow);
       },
       error: function(jqXHR, textStatus, errorThrown) {
         return console.log(textStatus);

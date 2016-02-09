@@ -9,22 +9,15 @@
       "fixed": true
     },
     {
-      "id": 1,
-      "name": "buffer",
-      "x": 200,
-      "y": 200,
-      "fixed": true
-    },
-    {
       "id": 2,
       "name": "filter",
-      "x": 200,
+      "x": 400,
       "y": 300,
       "fixed": true
     },
     {
       "id": 3,
-      "name": "convert",
+      "name": "calc&conv",
       "x": 300,
       "y": 300,
       "fixed": true
@@ -33,21 +26,21 @@
       "id": 4,
       "name": "products",
       "class": "circle",
-      "x": 400,
+      "x": 500,
       "y": 200,
       "fixed": true
     },
     {
       "id": 5,
-      "name": "select",
-      "x": 400,
+      "name": "filterJoin",
+      "x": 500,
       "y": 300,
       "fixed": true
     },
     {
       "id": 6,
       "name": "avgSent",
-      "x": 500,
+      "x": 600,
       "y": 300,
       "fixed": true
     },
@@ -55,28 +48,28 @@
       "id": 7,
       "name": "sales",
       "class": "circle",
-      "x": 300,
+      "x": 500,
       "y": 400,
       "fixed": true
     },
     {
       "id": 8,
       "name": "filter",
-      "x": 400,
+      "x": 700,
       "y": 400,
       "fixed": true
     },
     {
       "id": 9,
       "name": "totalSales",
-      "x": 500,
+      "x": 600,
       "y": 400,
       "fixed": true
     },
     {
       "id": 10,
       "name": "join1",
-      "x": 600,
+      "x": 700,
       "y": 300,
       "fixed": true
     },
@@ -84,21 +77,21 @@
       "id": 11,
       "name": "campaign",
       "class": "circle",
-      "x": 600,
+      "x": 700,
       "y": 200,
       "fixed": true
     },
     {
       "id": 12,
       "name": "filter",
-      "x": 700,
+      "x": 800,
       "y": 200,
       "fixed": true
     },
     {
       "id": 13,
       "name": "join2",
-      "x": 700,
+      "x": 800,
       "y": 300,
       "fixed": true
     },
@@ -106,7 +99,7 @@
       "id": 14,
       "name": "result",
       "class": "circle",
-      "x": 700,
+      "x": 800,
       "y": 400,
       "fixed": true
     }
@@ -115,22 +108,17 @@
     {
       "id": 0,
       "sourceId": 0,
-      "targetId": 1,
+      "targetId": 3,
       "class": "dashed"
     },
     {
-      "id": 1,
-      "sourceId": 1,
+      "id": 2,
+      "sourceId": 3,
       "targetId": 2
     },
     {
-      "id": 2,
-      "sourceId": 2,
-      "targetId": 3
-    },
-    {
       "id": 3,
-      "sourceId": 3,
+      "sourceId": 2,
       "targetId": 5
     },
     {
@@ -152,17 +140,17 @@
     {
       "id": 7,
       "sourceId": 7,
-      "targetId": 8,
+      "targetId": 9,
       "class": "dashed"
     },
     {
       "id": 8,
-      "sourceId": 8,
-      "targetId": 9
+      "sourceId": 9,
+      "targetId": 8
     },
     {
       "id": 9,
-      "sourceId": 9,
+      "sourceId": 8,
       "targetId": 10
     },
     {
@@ -191,7 +179,7 @@
   "tasks": [
     {
       "id": 0,
-      "name": "tweets reviews",
+      "name": "tweets",
       "class": "circle",
       "nodeId": 0,
       "json": {
@@ -209,12 +197,26 @@
         }
       }
     },
+
     {
       "id": 1,
-      "name": "buffer",
+      "name": "reviews",
       "class": "circle",
-      "nodeId": 1,
-      "json": {}
+      "nodeId": 0,
+      "json": {
+        "tweets&reviews": {
+          "constraints": {
+            "data_info": {
+              "attributes": [
+                {"user": {"type": "Varchar(15)"}},
+                {"text": {"type": "Varchar"}},
+                {"coord": {"type": "(Integer, Integer)"}},
+                {"timestamp": {"type": "Integer"}}
+              ]
+            }
+          }
+        }
+      }
     },
     {
       "id": 2,
@@ -258,7 +260,7 @@
     },
     {
       "id": 3,
-      "name": "calc&conv",
+      "name": "calcSent",
       "class": "circle",
       "nodeId": 3,
       "json": {
@@ -277,9 +279,7 @@
               "data_info": {
                 "attributes": [
                   "tag",
-                  "sentiment",
-                  "region",
-                  "date"
+                  "sentiment"
                 ]
               }
             },
@@ -293,7 +293,46 @@
                   {
                     "calc_attr": "sentiment",
                     "calc_expression": "analyse(text)"
-                  },
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": 15,
+      "name": "convDate",
+      "class": "circle",
+      "nodeId": 3,
+      "json": {
+        "calc": {
+          "constraints": {
+            "input": {
+              "data_info": {
+                "attributes": [
+                  "text",
+                  "coord",
+                  "timestamp",
+                  "tag",
+                  "sentiment"
+                ]
+              }
+            },
+            "output": {
+              "data_info": {
+                "attributes": [
+                  "tag",
+                  "sentiment",
+                  "region",
+                  "date"
+                ]
+              }
+            },
+            "op_specification": {
+              "algorithm": {
+                "calc": [
                   {
                     "calc_attr": "region",
                     "calc_expression": "convert(coord)"
