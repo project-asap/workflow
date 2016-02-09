@@ -21,12 +21,14 @@ Then you can use this file for nginx server configuration:
 `ln -s ~/your/path/to/wmt/wmt.conf /your/nginx/installation/servers/`
 
 To build the project use [Grunt](http://gruntjs.com/). Installation of Grunt's command line interface (CLI) globally can be done with the following commands:
+
 1.  `sudo apt-get npm`
 2.  `sudo npm install -g grunt-cli`
 
 The project is configured with a `package.json` and a `Gruntfile.js`, it's very easy to start working with Grunt:
+
 1.  Go to the project's root directory.
-2   Install project dependencies with `npm install`.
+2.  Install project dependencies with `npm install`.
 3.  Run Grunt with `grunt`.
 
 Usage of a tool
