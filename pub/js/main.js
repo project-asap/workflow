@@ -17,7 +17,7 @@ nodeLink = false;
 taskLink = false;
 
 openWorkflow = function(w) {
-  var i, j, len, len1, link, node, ref, ref1;
+  var edge, i, j, len, len1, node, ref, ref1;
   workflow = w;
   graph.clean();
   $('#node').addClass('hide');
@@ -32,10 +32,10 @@ openWorkflow = function(w) {
     node = ref[i];
     graph.addNode(node);
   }
-  ref1 = w.links;
+  ref1 = w.edges;
   for (j = 0, len1 = ref1.length; j < len1; j++) {
-    link = ref1[j];
-    graph.addLink(link);
+    edge = ref1[j];
+    graph.addLink(edge);
   }
 };
 
@@ -72,7 +72,7 @@ loadFile = function() {
 };
 
 selectNode = function(id, type) {
-  var link, newclass, node, oldclass, task;
+  var i, len, link, newclass, node, oldclass, ref, task;
   $('#node').removeClass('hide');
   if (type === 'task') {
     $('#taskName').removeClass('hide');
@@ -89,7 +89,7 @@ selectNode = function(id, type) {
     $('#tasksBoard').find('.node' + taskSelected).attr('class', oldclass + ' selected');
     task = workflow.tasks[id];
     $('#taskTitle').val(task.name);
-    $('#metadataEditor').val(JSON.stringify(task.json, null, 2));
+    $('#metadataEditor').val(JSON.stringify(task.operator, null, 2));
     if (addingLink) {
       if (nodeLink || isNaN(parseInt(node1))) {
         taskLink = true;
@@ -124,9 +124,14 @@ selectNode = function(id, type) {
     nodeSelected = id;
     oldclass = $('#wlBoard').find('.node' + nodeSelected).attr('class');
     $('#wlBoard').find('.node' + nodeSelected).attr('class', oldclass + ' selected');
-    node = workflow.nodes[id];
+    ref = workflow.nodes;
+    for (i = 0, len = ref.length; i < len; i++) {
+      node = ref[i];
+      if (parseInt(node.id) === id) {
+        $('#nodeTitle').val(node.name);
+      }
+    }
     showTasks(id);
-    $('#nodeTitle').val(node.name);
     if (addingLink) {
       if (taskLink || isNaN(parseInt(node1))) {
         taskLink = false;
@@ -153,10 +158,12 @@ selectNode = function(id, type) {
 
 $(document).ready(function() {
   $('#newwl').click(function() {
-    var nw;
+    var nw, wlName;
+    wlName = prompt('Please enter workflow name', '');
     nw = {
+      'name': wlName,
       'nodes': [],
-      'links': [],
+      'edges': [],
       'tasks': [],
       'taskLinks': []
     };
@@ -171,26 +178,38 @@ $(document).ready(function() {
   $('#savewl').click(function() {
     var blob, sw;
     sw = {
+      'name': workflow.name,
       'nodes': workflow.nodes,
-      'links': workflow.links,
+      'edges': workflow.edges,
       'tasks': workflow.tasks,
       'taskLinks': workflow.taskLinks || []
     };
     blob = new Blob([JSON.stringify(sw)], {
       type: 'application/json;charset=utf-8'
     });
-    return saveAs(blob, 'workflow.json');
+    return saveAs(blob, workflow.name + '.json');
   });
   $('#nodeTitle').on('input', function() {
+    var i, len, node, ref, results;
     $('#wlBoard').find('.node' + nodeSelected).find('text').text($(this).val());
-    return workflow.nodes[nodeSelected].name = $(this).val();
+    ref = workflow.nodes;
+    results = [];
+    for (i = 0, len = ref.length; i < len; i++) {
+      node = ref[i];
+      if (parseInt(node.id) === nodeSelected) {
+        results.push(node.name = $(this).val());
+      } else {
+        results.push(void 0);
+      }
+    }
+    return results;
   });
   $('#taskTitle').on('input', function() {
     $('#tasksBoard').find('.node' + taskSelected).find('text').text($(this).val());
     return workflow.tasks[taskSelected].name = $(this).val();
   });
   $('#metadataEditor').on('input', function() {
-    return workflow.tasks[taskSelected].json = JSON.parse($(this).val());
+    return workflow.tasks[taskSelected].operator = JSON.parse($(this).val());
   });
   $('#adddatastore').click(function() {
     var node, nodeId, nodeName;
@@ -236,7 +255,9 @@ $(document).ready(function() {
       'name': nodeName,
       'nodeId': nodeSelected,
       'class': 'circle',
-      'json': {}
+      'operator': {
+        'constraints': {}
+      }
     };
     tgraph.addNode(task);
     return workflow.tasks.push(task);
@@ -251,7 +272,7 @@ $(document).ready(function() {
       'name': 'Filter Join',
       'nodeId': nodeSelected,
       'class': 'circle',
-      'json': {
+      'operators': {
         'constraints': {
           'input': {
             'number': 2
@@ -290,7 +311,7 @@ $(document).ready(function() {
       'name': 'groupBy Sort',
       'nodeId': nodeSelected,
       'class': 'circle',
-      'json': {
+      'operator': {
         'constraints': {
           'input': {
             'number': 1
@@ -326,7 +347,7 @@ $(document).ready(function() {
       'name': 'PeakDetection',
       'nodeId': nodeSelected,
       'class': 'circle',
-      'json': {
+      'operator': {
         'constraints': {
           'input': {
             'number': 1
@@ -355,7 +376,7 @@ $(document).ready(function() {
       'name': 'Tf-Idf',
       'nodeId': nodeSelected,
       'class': 'circle',
-      'json': {
+      'operator': {
         'constraints': {
           'input': {
             'number': 1
@@ -384,7 +405,7 @@ $(document).ready(function() {
       'name': 'k-Means',
       'nodeId': nodeSelected,
       'class': 'circle',
-      'json': {
+      'operator': {
         'constraints': {
           'input': {
             'number': 1
@@ -413,7 +434,7 @@ $(document).ready(function() {
       'name': 'filter',
       'nodeId': nodeSelected,
       'class': 'circle',
-      'json': {
+      'operator': {
         'constraints': {
           'input': {
             'number': 1
@@ -449,7 +470,7 @@ $(document).ready(function() {
       'name': 'calc',
       'nodeId': nodeSelected,
       'class': 'circle',
-      'json': {
+      'operator': {
         'constraints': {
           'input': {
             'number': 1
@@ -475,13 +496,32 @@ $(document).ready(function() {
     tgraph.addNode(task);
     return workflow.tasks.push(task);
   });
+  $('#dataset').click(function() {
+    var task, taskId;
+    $('#libraryOperators').toggleClass('hide');
+    $('#addTask').parent('li').removeClass('active');
+    taskId = workflow.tasks.length;
+    task = {
+      'id': taskId,
+      'name': 'dataset',
+      'nodeId': nodeSelected,
+      'class': 'circle',
+      'type': 'dataset',
+      'operator': {
+        'constraints': {}
+      }
+    };
+    tgraph.addNode(task);
+    return workflow.tasks.push(task);
+  });
   $('#analyse').click(function() {
     return $.ajax('/php/index.php', {
       data: {
         action: 'analyse',
         workflow: {
+          'name': workflow.name,
           'nodes': workflow.nodes,
-          'links': workflow.links,
+          'edges': workflow.edges,
           'tasks': workflow.tasks,
           'taskLinks': workflow.taskLinks || []
         }
@@ -498,13 +538,14 @@ $(document).ready(function() {
       }
     });
   });
-  return $('#optimise').click(function() {
+  $('#optimise').click(function() {
     return $.ajax('/php/index.php', {
       data: {
         action: 'optimise',
         workflow: {
+          'name': workflow.name,
           'nodes': workflow.nodes,
-          'links': workflow.links,
+          'edges': workflow.edges,
           'tasks': workflow.tasks,
           'taskLinks': workflow.taskLinks || []
         }
@@ -515,6 +556,27 @@ $(document).ready(function() {
         newWorkflow = JSON.parse(data);
         newWorkflow.taskLinks = newWorkflow.taskLinks || [];
         return openWorkflow(newWorkflow);
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        return console.log(textStatus);
+      }
+    });
+  });
+  return $('#execute').click(function() {
+    return $.ajax('/php/index.php', {
+      data: {
+        action: 'execute',
+        workflow: {
+          'name': workflow.name,
+          'nodes': workflow.nodes,
+          'edges': workflow.edges,
+          'tasks': workflow.tasks,
+          'taskLinks': workflow.taskLinks || []
+        }
+      },
+      type: 'POST',
+      success: function(data, textStatus, jqXHR) {
+        return console.log(data);
       },
       error: function(jqXHR, textStatus, errorThrown) {
         return console.log(textStatus);
@@ -523,7 +585,7 @@ $(document).ready(function() {
   });
 });
 
-$.getJSON('files/workflow.json', function(json) {
+$.getJSON('workflows/test_wl.json', function(json) {
   return openWorkflow(json);
 });
 

@@ -1,0 +1,237 @@
+{
+  "nodes": [
+    {
+      "id": 0,
+      "name": "data",
+      "class": "circle",
+      "x": 200,
+      "y": 200,
+      "fixed": true
+    },
+    {
+      "id": 1,
+      "name": "select&calc",
+      "x": 300,
+      "y": 200,
+      "fixed": true
+    },
+    {
+      "id": 2,
+      "name": "move",
+      "x": 400,
+      "y": 200,
+      "fixed": true
+    },
+    {
+      "id": 3,
+      "name": "NLP",
+      "x": 500,
+      "y": 200,
+      "fixed": true
+    },
+    {
+      "id": 4,
+      "name": "result",
+      "class": "circle",
+      "x": 600,
+      "y": 200,
+      "fixed": true
+    }
+  ],
+  "edges": [
+    {
+      "id": 0,
+      "sourceId": 0,
+      "targetId": 1,
+      "class": "dashed"
+    },
+    {
+      "id": 1,
+      "sourceId": 1,
+      "targetId": 2
+    },
+    {
+      "id": 2,
+      "sourceId": 2,
+      "targetId": 3
+    },
+    {
+      "id": 3,
+      "sourceId": 3,
+      "targetId": 4,
+      "class": "dashed"
+    }
+  ],
+  "tasks": [
+    {
+      "id": 0,
+      "name": "data",
+      "class": "circle",
+      "nodeId": 0,
+      "type": "dataset",
+      "operator": {
+        "constraints": {
+          "data_info": {
+            "attributes": [
+              {"text": {"type": "Varchar"}}
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 1,
+      "name": "select",
+      "class": "circle",
+      "nodeId": 1,
+      "operator": {
+        "constraints": {
+          "input": {
+            "data_info": {
+              "attributes": ["text"]
+            }
+          },
+          "output": {
+            "data_info": {
+              "attributes": ["text"]
+            }
+          },
+          "op_specification": {
+            "algorithm": {
+              "select": {
+                "select_condition": [
+                  "q in input.text"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "calc",
+      "class": "circle",
+      "nodeId": 1,
+      "operator": {
+        "constraints": {
+          "input": {
+            "data_info": {
+              "attributes": ["text"]
+            }
+          },
+          "output": {
+            "data_info": {
+              "attributes": [
+                "text",
+                "annotation"
+              ]
+            }
+          },
+          "op_specification": {
+            "algorithm": {
+              "calc": [
+                {
+                  "calc_attr": "annotation",
+                  "calc_expression": "extract_text()"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": 3,
+      "name": "move",
+      "class": "circle",
+      "nodeId": 2,
+      "operator": {
+        "constraints": {
+          "input": {
+            "data_info": {
+              "attributes": [
+                "text",
+                "annotation"
+              ]
+            },
+            "engine": {
+              "DB": "Elasticsearch"
+            }
+          },
+          "output": {
+            "data_info": {
+              "attributes": [
+                "text",
+                "annotation"
+              ]
+            },
+            "engine": {
+              "DB": "HDFS"
+            }
+          },
+          "op_specification": {
+            "algorithm": {
+              "convert": [
+                {
+                  "from": "Elasticsearch",
+                  "to": "HDFS"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "NLP",
+      "class": "circle",
+      "nodeId": 3,
+      "operator": {
+        "constraints": {
+          "input": {
+            "data_info": {
+              "attributes": [
+                "text",
+                "annotation"
+              ]
+            }
+          },
+          "output": {
+            "data_info": {
+              "attributes": [
+                "text",
+                "annotation",
+                "classification"
+              ]
+            }
+          },
+          "op_specification": {
+            "algorithm": {
+              "classification": {
+                "technique": "tf-idf"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": 5,
+      "name": "result",
+      "class": "circle",
+      "nodeId": 4,
+      "type": "dataset",
+      "operator": {
+        "constraints": {}
+      }
+    }
+  ],
+  "taskLinks": [
+    {
+      "sourceId": 1,
+      "targetId": 2
+    }
+  ]
+}

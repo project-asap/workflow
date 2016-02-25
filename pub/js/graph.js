@@ -112,7 +112,7 @@ wGraph = function(el) {
         return 'node' + d.id + ' node ' + d["class"];
       }
     }).attr('onclick', function(d) {
-      if (!d.json) {
+      if (!d.operator) {
         return 'selectNode(' + d.id + ')';
       } else {
         return 'selectNode(' + d.id + ',\'task\')';

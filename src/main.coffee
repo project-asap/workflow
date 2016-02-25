@@ -23,8 +23,8 @@ openWorkflow = (w) ->
 
   for node in w.nodes
     graph.addNode(node)
-  for link in w.links
-    graph.addLink(link)
+  for edge in w.edges
+    graph.addLink(edge)
   return
 
 showTasks = (nodeId) ->
@@ -62,7 +62,7 @@ selectNode = (id, type) ->
     $('#tasksBoard').find('.node'+taskSelected).attr('class', oldclass+' selected')
     task = workflow.tasks[id]
     $('#taskTitle').val(task.name)
-    $('#metadataEditor').val(JSON.stringify(task.json, null, 2))
+    $('#metadataEditor').val(JSON.stringify(task.operator, null, 2))
 
 #    $('#metadataTree').removeClass('hide')
 #    flare = task.json
@@ -98,9 +98,10 @@ selectNode = (id, type) ->
     nodeSelected = id
     oldclass = $('#wlBoard').find('.node'+nodeSelected).attr('class')
     $('#wlBoard').find('.node'+nodeSelected).attr('class', oldclass+' selected')
-    node = workflow.nodes[id]
+    for node in workflow.nodes
+      if parseInt(node.id) == id
+        $('#nodeTitle').val(node.name)
     showTasks(id)
-    $('#nodeTitle').val(node.name)
 
     if (addingLink)
       if (taskLink || isNaN(parseInt(node1)))
@@ -122,9 +123,11 @@ selectNode = (id, type) ->
 
 $(document).ready ->
   $('#newwl').click ->
+    wlName = prompt('Please enter workflow name', '')
     nw =
+      'name': wlName
       'nodes': []
-      'links': []
+      'edges': []
       'tasks': []
       'taskLinks': []
     openWorkflow(nw)
@@ -137,23 +140,26 @@ $(document).ready ->
 
   $('#savewl').click ->
     sw =
-      'nodes': workflow.nodes,
-      'links': workflow.links,
-      'tasks': workflow.tasks,
+      'name': workflow.name
+      'nodes': workflow.nodes
+      'edges': workflow.edges
+      'tasks': workflow.tasks
       'taskLinks': workflow.taskLinks || []
     blob = new Blob([JSON.stringify(sw)], {type: 'application/json;charset=utf-8'})
-    saveAs(blob, 'workflow.json')
+    saveAs(blob, workflow.name+'.json')
 
   $('#nodeTitle').on 'input', ->
     $('#wlBoard').find('.node'+nodeSelected).find('text').text($(this).val())
-    workflow.nodes[nodeSelected].name = $(this).val()
+    for node in workflow.nodes
+      if parseInt(node.id) == nodeSelected
+        node.name = $(this).val()
 
   $('#taskTitle').on 'input', ->
     $('#tasksBoard').find('.node'+taskSelected).find('text').text($(this).val())
     workflow.tasks[taskSelected].name = $(this).val()
 
   $('#metadataEditor').on 'input', ->
-    workflow.tasks[taskSelected].json = JSON.parse($(this).val())
+    workflow.tasks[taskSelected].operator = JSON.parse($(this).val())
 
   $('#adddatastore').click ->
     nodeName = prompt('Please enter datastore name', '')
@@ -194,7 +200,8 @@ $(document).ready ->
       'name': nodeName
       'nodeId': nodeSelected
       'class': 'circle'
-      'json': {}
+      'operator':
+        'constraints':{}
     tgraph.addNode(task)
     workflow.tasks.push task
 
@@ -207,7 +214,7 @@ $(document).ready ->
       'name': 'Filter Join'
       'nodeId': nodeSelected
       'class': 'circle'
-      'json':
+      'operators':
         'constraints':
           'input': 'number': 2
           'input0': 'type': 'SQL'
@@ -228,7 +235,7 @@ $(document).ready ->
       'name': 'groupBy Sort'
       'nodeId': nodeSelected
       'class': 'circle'
-      'json':
+      'operator':
         'constraints':
           'input': 'number': 1
           'input0': 'type': 'SQL'
@@ -248,7 +255,7 @@ $(document).ready ->
       'name': 'PeakDetection'
       'nodeId': nodeSelected
       'class': 'circle'
-      'json':
+      'operator':
         'constraints':
           'input': 'number': 1
           'output': 'number': 1
@@ -265,7 +272,7 @@ $(document).ready ->
       'name': 'Tf-Idf'
       'nodeId': nodeSelected
       'class': 'circle'
-      'json':
+      'operator':
         'constraints':
           'input': 'number': 1
           'output': 'number': 1
@@ -282,7 +289,7 @@ $(document).ready ->
       'name': 'k-Means'
       'nodeId': nodeSelected
       'class': 'circle'
-      'json':
+      'operator':
         'constraints':
           'input': 'number': 1
           'output': 'number': 1
@@ -300,7 +307,7 @@ $(document).ready ->
       'name': 'filter'
       'nodeId': nodeSelected
       'class': 'circle'
-      'json':
+      'operator':
         'constraints':
           'input': 'number': 1
           'input0': 'type': 'SQL'
@@ -321,7 +328,7 @@ $(document).ready ->
       'name': 'calc'
       'nodeId': nodeSelected
       'class': 'circle'
-      'json':
+      'operator':
         'constraints':
           'input': 'number': 1
           'input0': 'type': 'SQL'
@@ -333,16 +340,32 @@ $(document).ready ->
     tgraph.addNode(task)
     workflow.tasks.push task
 
+  $('#dataset').click ->
+    $('#libraryOperators').toggleClass('hide')
+    $('#addTask').parent('li').removeClass('active')
+    taskId = workflow.tasks.length
+    task =
+      'id': taskId
+      'name': 'dataset'
+      'nodeId': nodeSelected
+      'class': 'circle'
+      'type': 'dataset'
+      'operator':
+        'constraints': {}
+    tgraph.addNode(task)
+    workflow.tasks.push task
+
   $('#analyse').click ->
     $.ajax '/php/index.php',
       data:
-        action: 'analyse',
+        action: 'analyse'
         workflow:
-          'nodes': workflow.nodes,
-          'links': workflow.links,
-          'tasks': workflow.tasks,
-          'taskLinks': workflow.taskLinks || [],
-      type: 'POST',
+          'name': workflow.name
+          'nodes': workflow.nodes
+          'edges': workflow.edges
+          'tasks': workflow.tasks
+          'taskLinks': workflow.taskLinks || []
+      type: 'POST'
       success: (data, textStatus, jqXHR) ->
 #        console.log(data)
         newWorkflow = JSON.parse(data)
@@ -355,23 +378,39 @@ $(document).ready ->
   $('#optimise').click ->
     $.ajax '/php/index.php',
       data:
-        action: 'optimise',
+        action: 'optimise'
         workflow:
-          'nodes': workflow.nodes,
-          'links': workflow.links,
-          'tasks': workflow.tasks,
-          'taskLinks': workflow.taskLinks || [],
-      type: 'POST',
+          'name': workflow.name
+          'nodes': workflow.nodes
+          'edges': workflow.edges
+          'tasks': workflow.tasks
+          'taskLinks': workflow.taskLinks || []
+      type: 'POST'
       success: (data, textStatus, jqXHR) ->
 #        console.log(data)
         newWorkflow = JSON.parse(data)
         newWorkflow.taskLinks = newWorkflow.taskLinks || []
-#        commented out until better times
         openWorkflow(newWorkflow)
       error: (jqXHR, textStatus, errorThrown) ->
         console.log(textStatus)
 
-$.getJSON 'files/workflow.json', (json) ->
+  $('#execute').click ->
+    $.ajax '/php/index.php',
+      data:
+        action: 'execute'
+        workflow:
+          'name': workflow.name
+          'nodes': workflow.nodes
+          'edges': workflow.edges
+          'tasks': workflow.tasks
+          'taskLinks': workflow.taskLinks || []
+      type: 'POST'
+      success: (data, textStatus, jqXHR) ->
+        console.log(data)
+      error: (jqXHR, textStatus, errorThrown) ->
+        console.log(textStatus)
+
+$.getJSON 'workflows/test_wl.json', (json) ->
   openWorkflow(json)
 
 graph = new wGraph('#wlBoard')

@@ -117,7 +117,7 @@ wGraph = (el) ->
       else
         'node' + d.id + ' node ' + d.class)
     .attr('onclick', (d) ->
-      if !d.json
+      if !d.operator
         'selectNode(' + d.id + ')'
       else
         'selectNode(' + d.id + ',\'task\')'
