@@ -37,12 +37,12 @@ class Workflow:
             node['taskIds'] = []
         for task in self.tasks:
             nid = int(task['nodeId'])
-            self.nodes[nid]['taskIds'].append(int(task['id']))
+            self.FindNode(nid)['taskIds'].append(int(task['id']))
         for edge in self.edges:
             inp = int(edge['sourceId'])
             out = int(edge['targetId'])
-            self.nodes[inp]['successors'].append(int(self.nodes[inp]['id']))
-            self.nodes[out]['predecessors'].append(int(self.nodes[out]['id']))
+            self.FindNode(inp)['successors'].append(out)
+            self.FindNode(out)['predecessors'].append(inp)
             edge['analysis'] = {}
             for task in self.tasks:
                 inpdict = {}
@@ -282,6 +282,12 @@ class Workflow:
             if (self.isNodeUnary(i) and self.isNodeUnary(j)):
                 LP.append(k)
         return LP
+
+    def FindNode(self, id):
+        for node in self.nodes:
+            if id == int(node['id']):
+                return node
+        sys.exit('ERROR: Node with id %s not found!' % id)
 
     def getCost(self):
         # TODO: getCost from IReS
