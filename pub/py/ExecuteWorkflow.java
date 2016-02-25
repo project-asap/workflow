@@ -17,7 +17,6 @@ import gr.ntua.cslab.asap.operators.Operator;
 import gr.ntua.cslab.asap.rest.beans.WorkflowDictionary;
 import gr.ntua.cslab.asap.workflow.AbstractWorkflow1;
 import gr.ntua.cslab.asap.workflow.WorkflowNode;
-import gr.ntua.cslab.asap.daemon.RunningWorkflowLibrary;
 import gr.ntua.cslab.asap.staticLibraries.MaterializedWorkflowLibrary;
 
 public class ExecuteWorkflow {
@@ -38,9 +37,8 @@ public class ExecuteWorkflow {
 						"groupInputs,cost,sum\n"+
 						"function,2*execTime+3*cost,min";
 
-		String materializedWorkflow = cli.materializeWorkflow("abstractTest1", policy);
+		String materializedWorkflow = cli.materializeWorkflow(name, policy);
 		System.out.println(materializedWorkflow);
-        RunningWorkflowLibrary.executeWorkflow(MaterializedWorkflowLibrary.get(materializedWorkflow));
-
+        cli.executeWorkflow(materializedWorkflow);
 	}
 }

@@ -297,6 +297,7 @@ class Workflow:
         os.makedirs(self.WLibrary+fname+'/'+'operators')
         os.makedirs(self.WLibrary+fname+'/'+'datasets')
         graph = ''
+        targ = ''
         for edge in self.edges:
             inp = int(edge['sourceId'])
             out = int(edge['targetId'])
@@ -304,6 +305,10 @@ class Workflow:
             taskOid = int(self.nodes[out]['taskIds'][0])
             taskI = self.tasks[taskIid]
             taskO = self.tasks[taskOid]
+
+            if len(self.nodes[out]['successors']) == 0:
+                targ = taskO['name']
+
             for task in [taskI, taskO]:
                 if ('type' in task and task['type'] == 'dataset'):
                     dir = 'datasets'
@@ -318,13 +323,14 @@ class Workflow:
                     file.close()
             graph = graph + taskI['name'] + ',' + taskO['name'] + '\n'
 
+        graph = graph + targ + ',$$target\n'
         file = open(os.path.join(self.WLibrary, fname, 'graph'), 'wb')
         file.write(graph)
         file.close()
 
         py_dir = os.path.dirname(os.path.realpath(__file__))
         os.chdir(py_dir)
-        os.system('java -cp . ExecuteWorkflow '+self.name+' '+fname)
+        os.system('java -cp ASAP_client.jar ExecuteWorkflow '+self.name+' '+fname)
 
     def save(self, add = None):
         current_time = datetime.now().strftime("%Y-%m-%d_%H:%M")
@@ -378,6 +384,7 @@ if __name__ == "__main__":
         # w.es()
         print w.save('-optimised')
     elif (action == 'execute'):
+        w.analyse()
         w.execute()
     else:
         sys.exit('ERROR: Unsupported action %s!' % sys.argv[1])

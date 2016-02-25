@@ -102,7 +102,7 @@ selectNode = function(id, type) {
         link = {
           'sourceId': node1,
           'targetId': node2,
-          'id': graph.links.length
+          'id': workflow.taskLinks.length
         };
         tgraph.addLink(link);
         workflow.taskLinks.push(link);
@@ -144,10 +144,10 @@ selectNode = function(id, type) {
         link = {
           'sourceId': node1,
           'targetId': node2,
-          'id': graph.links.length
+          'id': workflow.edges.length
         };
         graph.addLink(link);
-        workflow.links.push(link);
+        workflow.edges.push(link);
         nodeLink = false;
         node1 = null;
         return node2 = null;
@@ -562,7 +562,7 @@ $(document).ready(function() {
       }
     });
   });
-  return $('#execute').click(function() {
+  $('#execute').click(function() {
     return $.ajax('/php/index.php', {
       data: {
         action: 'execute',
@@ -573,6 +573,20 @@ $(document).ready(function() {
           'tasks': workflow.tasks,
           'taskLinks': workflow.taskLinks || []
         }
+      },
+      type: 'POST',
+      success: function(data, textStatus, jqXHR) {
+        return console.log(data);
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        return console.log(textStatus);
+      }
+    });
+  });
+  return $('#dashboard').click(function() {
+    return $.ajax('/php/index.php', {
+      data: {
+        action: 'get_list'
       },
       type: 'POST',
       success: function(data, textStatus, jqXHR) {
