@@ -1,0 +1,59 @@
+#################
+# CONFIGURATION #
+#################
+#OPERATOR
+Constraints.OpSpecification.Algorithm.name=Join_SQL_query
+#ENGINE
+Constraints.Engine=PostgreSQL
+Constraints.EngineSpecification.Centralized.PostgreSQL.location=slave1
+#INPUT( mandatory)
+Constraints.Input.number=2
+#Input0
+Constraints.Input0.type=SQL
+Constraints.Input0.Engine.SQL=PostgreSQL
+Constraints.Input0.Engine.location=slave1
+#Input1
+Constraints.Input1.type=SQL
+Constraints.Input1.Engine.SQL=PostgreSQL
+Constraints.Input1.Engine.location=slave1
+#OUTPUT( mandatory)
+Constraints.Output.number=1
+Constraints.Output0.type=SQL
+Constraints.Output0.Engine.SQL=PostgreSQL
+Constraints.Output0.Engine.location=slave1
+#PREPARED STATEMENT
+Constraints.OpSpecification.SQL_query="SELECT * FROM $1 LEFT JOIN $2 ON $3"
+
+############
+# MODELING #
+############
+#OPTIMIZATION DIMENSIONS( mandatory, at least one)
+#type,min_value,max_value,step
+Optimization.inputSpace.In0.size=Double,1E7,1E10,l
+Optimization.inputSpace.In1.size=Double,1E7,1E10,l
+#OPTIMIZATION METRIC( mandatory, at least one)
+Optimization.outputSpace.execTime=Double
+Optimization.outputSpace.Out0.size=Double
+Optimization.outputSpace.cost=Double
+#optimization metric function
+Optimization.model.execTime=gr.ntua.ece.cslab.panic.core.models.AbstractWekaModel
+Optimization.model.Out0.size=gr.ntua.ece.cslab.panic.core.models.UserFunction
+Optimization.Out0.size=(In0.size+In1.size)*0.1
+Optimization.model.cost=gr.ntua.ece.cslab.panic.core.models.UserFunction
+Optimization.cost=1.0
+
+#############
+# EXECUTION #
+#############
+#LUA CONFIGURATION FILE( mandatory)
+Execution.LuaScript=Postgres_Join.lua
+#EXECUTION ARGUMENTS( optional)
+Execution.Arguments.number=5
+Execution.Argument0=In0.name
+Execution.Argument1=In1.name
+Execution.Argument2=join_cond
+Execution.Argument3=Out0.name
+Execution.Argument4=dbname
+#EXECUTION OUTPUT( mandatory)
+Execution.Output0.name=Out0.name
+Execution.Output0.schema=(*)

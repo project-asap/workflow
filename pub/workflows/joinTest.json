@@ -1,0 +1,141 @@
+{
+  "name": "joinTest",
+  "nodes": [
+    {
+      "id": 0,
+      "taskIds": [0],
+      "name": "cdr_w_a",
+      "class": "circle"
+    },
+    {
+      "id": 1,
+      "taskIds": [1],
+      "name": "voronoi",
+      "class": "circle"
+    },
+    {
+      "id": 2,
+      "taskIds": [2],
+      "name": "join"
+    },
+    {
+      "id": 3,
+      "taskIds": [3],
+      "name": "result",
+      "class": "circle"
+    }
+  ],
+  "edges": [
+    {
+      "id": 0,
+      "sourceId": 0,
+      "targetId": 2,
+      "class": "dashed"
+    },
+    {
+      "id": 1,
+      "sourceId": 1,
+      "targetId": 2,
+      "class": "dashed"
+    },
+    {
+      "id": 2,
+      "sourceId": 2,
+      "targetId": 3,
+      "class": "dashed"
+    }
+  ],
+  "tasks": [
+    {
+      "id": 0,
+      "nodeId": 0,
+      "name": "cdr_w_a",
+      "type": "dataset",
+      "operator": {
+        "Constraints":{
+          "Engine":{
+            "SQL":"PostgreSQL",
+            "location":"hdp1.itc.unipi.it"
+          },
+          "type":"SQL"
+        },
+        "Optimization":{"size":"4.50E08"},
+        "Execution": {
+          "name": "CDR",
+          "schema": "(ID int, TS timestamp, NUM int, aID int)"
+        }
+      }
+    },
+    {
+      "id": 1,
+      "nodeId": 1,
+      "name": "voronoi",
+      "type": "dataset",
+      "operator": {
+        "Constraints":{
+          "Engine":{
+            "SQL":"PostgreSQL",
+            "location":"hdp1.itc.unipi.it"
+          },
+          "type":"SQL"
+        },
+        "Optimization":{"size":"4.50E08"},
+        "Execution": {
+          "name": "VORONOI",
+          "schema": "(rID int, aID int)"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "nodeId": 2,
+      "name": "Test_Join",
+      "operator": {
+        "Constraints": {
+          "opSpecification": {
+            "Algorithm": {
+              "name": "Join_SQL_query"
+            }
+          },
+          "Input":{"number":2},
+          "Input0":{"type":"SQL"},
+          "Input1":{"type":"SQL"},
+          "Output":{"number":1},
+          "Output0":{"type":"SQL"}
+        },
+        "Execution": {
+          "Arguments": {
+            "number": 2
+          },
+          "Argument0": "CDR",
+          "Argument1": "VORONOI",
+          "Argument2": "(CDR.aID = VORONOI.aID)",
+          "Argument3": "joined",
+          "Argument4": "dbname"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "nodeId": 3,
+      "name": "d1",
+      "type": "dataset",
+      "operator": {
+        "Constraints":{
+          "Engine":{
+            "SQL":"PostgreSQL",
+            "location":"hdp1.itc.unipi.it"
+          },
+          "type":"SQL"
+        },
+        "Optimization":{"size":"4.50E08"},
+        "Execution": {
+          "name": "joined",
+          "schema": "(ID int, TS timestamp, NUM int, aID int, rID int)"
+        }
+      }
+    }
+  ],
+  "taskLinks": []
+}
+

@@ -1,0 +1,3 @@
+constraints.Execution.name=filtered
+constraints.Execution.schema=(ID int, TS timestamp, NUM int)
+constraints.Constraints.Engine.fs=hdfs

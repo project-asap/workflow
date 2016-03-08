@@ -1,0 +1,10 @@
+Execution.Argument1=extract(doy from TS) AS DOY, extract(dow from TS) as DOW, extract(hour from TS) as hour
+Execution.Argument2=data_raw
+Execution.Argument3=dbname
+Execution.Argument0=CDR
+Execution.Arguments.number=4
+Constraints.Output.number=1
+Constraints.Input0.type=SQL
+Constraints.opSpecification.Algorithm.name=Calc_SQL_query
+Constraints.Output0.type=SQL
+Constraints.Input.number=1

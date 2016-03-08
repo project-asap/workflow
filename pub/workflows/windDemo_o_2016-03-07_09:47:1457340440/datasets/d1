@@ -1,0 +1,3 @@
+Execution.name=events_filter
+Execution.schema=(rID int, hour int, DOY int, DOW int, ratio float)
+Constraints.Engine.fs=hdfs

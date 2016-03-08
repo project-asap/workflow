@@ -1,0 +1,107 @@
+{
+  "name": "filterTest",
+  "nodes": [
+    {
+      "id": 0,
+      "taskIds": [0],
+      "name": "cdr",
+      "class": "circle"
+    },
+    {
+      "id": 1,
+      "taskIds": [1],
+      "name": "filter"
+    },
+    {
+      "id": 2,
+      "taskIds": [2],
+      "name": "result",
+      "class": "circle"
+    }
+  ],
+  "edges": [
+    {
+      "id": 0,
+      "sourceId": 0,
+      "targetId": 1,
+      "class": "dashed"
+    },
+    {
+      "id": 1,
+      "sourceId": 1,
+      "targetId": 2,
+      "class": "dashed"
+    }
+  ],
+  "tasks": [
+    {
+      "id": 0,
+      "nodeId": 0,
+      "name": "cdr",
+      "type": "dataset",
+      "operator": {
+        "Constraints":{
+          "Engine":{
+            "SQL":"PostgreSQL",
+            "location":"hdp1.itc.unipi.it"
+          },
+          "type":"SQL"
+        },
+        "Optimization":{"size":"4.50E08"},
+        "Execution": {
+          "name": "CDR",
+          "schema": "(ID int, TS timestamp, NUM int)"
+        }
+      }
+    },
+    {
+      "id": 1,
+      "nodeId": 1,
+      "name": "Test_Filter",
+      "operator": {
+        "Constraints": {
+          "opSpecification": {
+            "Algorithm": {
+              "name": "Filter_SQL_query"
+            }
+          },
+          "Input":{"number":1},
+          "Input0":{"type":"SQL"},
+          "Output":{"number":1},
+          "Output0":{"type":"SQL"}
+        },
+        "Execution": {
+          "Arguments": {
+            "number": 2
+          },
+          "Argument0": "CDR",
+          "Argument1": "(TS<'2015-01-31')",
+          "Argument2": "filtered",
+          "Argument3": "dbname"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "nodeId": 2,
+      "name": "d1",
+      "type": "dataset",
+      "operator": {
+        "Constraints":{
+          "Engine":{
+            "SQL":"PostgreSQL",
+            "location":"hdp1.itc.unipi.it"
+          },
+          "type":"SQL"
+        },
+        "Optimization":{"size":"4.50E08"},
+        "Execution": {
+          "name": "filtered",
+          "schema": "(ID int, TS timestamp, NUM int)"
+        }
+      }
+      }
+  ],
+  "taskLinks": []
+}
+

@@ -1,0 +1,52 @@
+#################
+# CONFIGURATION #
+#################
+#OPERATOR
+Constraints.OpSpecification.Algorithm.name=Filter_SQL_query
+#ENGINE
+Constraints.Engine=PostgreSQL
+Constraints.EngineSpecification.Centralized.PostgreSQL.location=slave1
+#INPUT( mandatory)
+Constraints.Input.number=1
+Constraints.Input0.type=SQL
+Constraints.Input0.Engine.SQL=PostgreSQL
+Constraints.Input0.Engine.location=slave1
+#OUTPUT( mandatory)
+Constraints.Output.number=1
+Constraints.Output0.type=SQL
+Constraints.Output0.Engine.SQL=PostgreSQL
+Constraints.Output0.Engine.location=slave1
+#PREPARED STATEMENT
+Constraints.OpSpecification.SQL_query="SELECT * FROM $1 WHERE $2"
+
+############
+# MODELING #
+############
+#OPTIMIZATION DIMENSIONS( mandatory, at least one)
+#type,min_value,max_value,step
+Optimization.inputSpace.In0.size=Double,1E7,1E10,l
+#OPTIMIZATION METRIC( mandatory, at least one)
+Optimization.outputSpace.execTime=Double
+Optimization.outputSpace.Out0.size=Double
+Optimization.outputSpace.cost=Double
+#optimization metric function
+Optimization.model.execTime=gr.ntua.ece.cslab.panic.core.models.AbstractWekaModel
+Optimization.model.Out0.size=gr.ntua.ece.cslab.panic.core.models.UserFunction
+Optimization.Out0.size=(In0.size)*0.1
+Optimization.model.cost=gr.ntua.ece.cslab.panic.core.models.UserFunction
+Optimization.cost=1.0
+
+#############
+# EXECUTION #
+#############
+#LUA CONFIGURATION FILE( mandatory)
+Execution.LuaScript=Postgres_Filter.lua
+#EXECUTION ARGUMENTS( optional)
+Execution.Arguments.number=4
+Execution.Argument0=In0.name
+Execution.Argument1=where_cond
+Execution.Argument2=Out0.name
+Execution.Argument3=dbname
+#EXECUTION OUTPUT( mandatory)
+Execution.Output0.name=Out0.name
+Execution.Output0.schema=(*)

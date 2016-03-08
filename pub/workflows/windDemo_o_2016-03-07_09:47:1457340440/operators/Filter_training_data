@@ -1,0 +1,10 @@
+Execution.Argument1=DOY>=1 AND DOY <=31
+Execution.Argument2=training_data
+Execution.Argument3=dbname
+Execution.Argument0=data
+Execution.Arguments.number=4
+Constraints.Output.number=1
+Constraints.Input0.type=SQL
+Constraints.opSpecification.Algorithm.name=Filter_SQL_query
+Constraints.Output0.type=SQL
+Constraints.Input.number=1

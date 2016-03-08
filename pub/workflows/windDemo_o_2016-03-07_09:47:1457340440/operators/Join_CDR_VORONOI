@@ -1,0 +1,12 @@
+Execution.Argument4=dbname
+Execution.Argument2=CDR.aID = VORONOI.aID
+Execution.Argument3=cdr_wr
+Execution.Argument0=CDR
+Execution.Argument1=VORONOI
+Execution.Arguments.number=4
+Constraints.Input0.type=SQL
+Constraints.Input1.type=SQL
+Constraints.Output.number=1
+Constraints.Input.number=2
+Constraints.Output0.type=SQL
+Constraints.opSpecification.Algorithm.name=Join_SQL_query

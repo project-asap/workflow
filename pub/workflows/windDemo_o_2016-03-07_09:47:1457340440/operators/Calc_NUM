@@ -1,0 +1,10 @@
+Execution.Argument1=count(distinct(user_id)) as NUM
+Execution.Argument2=data
+Execution.Argument3=dbname
+Execution.Argument0=data_raw GROUP BY hour, DOW, DOY
+Execution.Arguments.number=4
+Constraints.Output.number=1
+Constraints.Input0.type=SQL
+Constraints.opSpecification.Algorithm.name=Calc_SQL_query
+Constraints.Output0.type=SQL
+Constraints.Input.number=1
