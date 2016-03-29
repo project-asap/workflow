@@ -174,10 +174,10 @@ $(document).ready ->
     task =
       'id': taskId
       'type': 'dataset'
-      'name': 'Filter Join'
+      'name': 'dataset'
       'nodeId': nodeId
       'class': 'circle'
-      'operators':
+      'operator':
         'constraints':
           'engine': 'FS': 'HDFS'
         'execution': 'path': 'hdfs:///dataset_simulated/06/1.csv'
@@ -229,7 +229,7 @@ $(document).ready ->
       'name': 'Filter Join'
       'nodeId': nodeSelected
       'class': 'circle'
-      'operators':
+      'operator':
         'constraints':
           'input': 'number': 2
           'input0': 'type': 'SQL'
