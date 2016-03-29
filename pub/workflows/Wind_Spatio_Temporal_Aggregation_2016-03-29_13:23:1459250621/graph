@@ -1,0 +1,5 @@
+dataset,Wind_Spatio_Temporal_Aggregation
+Wind_Spatio_Temporal_Aggregation,d1
+d1,Wind_Statistics_Publisher
+Wind_Statistics_Publisher,target
+target,$$target

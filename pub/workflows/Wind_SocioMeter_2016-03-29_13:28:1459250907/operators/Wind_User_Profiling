@@ -1,0 +1,3 @@
+constraints.input.number=1
+constraints.output.number=1
+constraints.opSpecification.algorithm.name=Wind_User_Profiling

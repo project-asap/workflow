@@ -1,0 +1,3 @@
+constraints.input.number=2
+constraints.output.number=1
+constraints.opSpecification.algorithm.name=Wind_Peak_Detection
