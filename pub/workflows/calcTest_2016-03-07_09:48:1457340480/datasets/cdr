@@ -1,3 +1,0 @@
-Execution.name=CDR
-Execution.schema=(ID int, TS timestamp, NUM int)
-Constraints.Engine.fs=hdfs

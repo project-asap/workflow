@@ -170,6 +170,21 @@ $(document).ready ->
       'class': 'circle'
     graph.addNode(node)
     workflow.nodes.push node
+    taskId = workflow.tasks.length
+    task =
+      'id': taskId
+      'type': 'dataset'
+      'name': 'Filter Join'
+      'nodeId': nodeId
+      'class': 'circle'
+      'operators':
+        'constraints':
+          'engine': 'FS': 'HDFS'
+        'execution': 'path': 'hdfs:///dataset_simulated/06/1.csv'
+        'optimization': 'size': '1E9'
+    tgraph.addNode(task)
+    workflow.tasks.push task
+
 
   $('#addnode').click ->
     nodeName = prompt('Please enter node name', '')
@@ -246,13 +261,30 @@ $(document).ready ->
             'SQL_query': 'SELECT NATIONKEY, SUM(TOTALPRICE) AS SUM FROM $1 GROUP BY NATIONKEY ORDER BY SUM'
     tgraph.addNode(task)
     workflow.tasks.push task
-  $('#PeakDetection').click ->
+  $('#WindPeakDetection').click ->
     $('#libraryOperators').toggleClass('hide')
     $('#addTask').parent('li').removeClass('active')
     taskId = workflow.tasks.length
     task =
       'id': taskId
-      'name': 'PeakDetection'
+      'name': 'Wind_Peak_Detection'
+      'nodeId': nodeSelected
+      'class': 'circle'
+      'operator':
+        'constraints':
+          'input': 'number': 2
+          'output': 'number': 1
+          'opSpecification':
+            'algorithm': 'name': 'Wind_Peak_Detection'
+    tgraph.addNode(task)
+    workflow.tasks.push task
+  $('#WindUserProfiling').click ->
+    $('#libraryOperators').toggleClass('hide')
+    $('#addTask').parent('li').removeClass('active')
+    taskId = workflow.tasks.length
+    task =
+      'id': taskId
+      'name': 'Wind_User_Profiling'
       'nodeId': nodeSelected
       'class': 'circle'
       'operator':
@@ -260,7 +292,109 @@ $(document).ready ->
           'input': 'number': 1
           'output': 'number': 1
           'opSpecification':
-            'algorithm': 'name': 'PeakDetection'
+            'algorithm': 'name': 'Wind_User_Profiling'
+    tgraph.addNode(task)
+    workflow.tasks.push task
+  $('#WindPeakDetectionPublisher').click ->
+    $('#libraryOperators').toggleClass('hide')
+    $('#addTask').parent('li').removeClass('active')
+    taskId = workflow.tasks.length
+    task =
+      'id': taskId
+      'name': 'Wind_Peak_Detection_Publisher'
+      'nodeId': nodeSelected
+      'class': 'circle'
+      'operator':
+        'constraints':
+          'input': 'number': 1
+          'output': 'number': 1
+          'opSpecification':
+            'algorithm': 'name': 'Wind_Peak_Detection_Publisher'
+    tgraph.addNode(task)
+    workflow.tasks.push task
+  $('#WindSpatioTemporalAggregation').click ->
+    $('#libraryOperators').toggleClass('hide')
+    $('#addTask').parent('li').removeClass('active')
+    taskId = workflow.tasks.length
+    task =
+      'id': taskId
+      'name': 'Wind_Spatio_Temporal_Aggregation'
+      'nodeId': nodeSelected
+      'class': 'circle'
+      'operator':
+        'constraints':
+          'input': 'number': 1
+          'output': 'number': 1
+          'opSpecification':
+            'algorithm': 'name': 'Wind_Spatio_Temporal_Aggregation'
+    tgraph.addNode(task)
+    workflow.tasks.push task
+  $('#WindStatisticsPublisher').click ->
+    $('#libraryOperators').toggleClass('hide')
+    $('#addTask').parent('li').removeClass('active')
+    taskId = workflow.tasks.length
+    task =
+      'id': taskId
+      'name': 'Wind_Statistics_Publisher'
+      'nodeId': nodeSelected
+      'class': 'circle'
+      'operator':
+        'constraints':
+          'input': 'number': 1
+          'output': 'number': 1
+          'opSpecification':
+            'algorithm': 'name': 'Wind_Statistics_Publisher'
+    tgraph.addNode(task)
+    workflow.tasks.push task
+  $('#WindDistributionComputation').click ->
+    $('#libraryOperators').toggleClass('hide')
+    $('#addTask').parent('li').removeClass('active')
+    taskId = workflow.tasks.length
+    task =
+      'id': taskId
+      'name': 'Wind_Distribution_Computation'
+      'nodeId': nodeSelected
+      'class': 'circle'
+      'operator':
+        'constraints':
+          'input': 'number': 1
+          'output': 'number': 1
+          'opSpecification':
+            'algorithm': 'name': 'Wind_Distribution_Computation'
+    tgraph.addNode(task)
+    workflow.tasks.push task
+  $('#WindDataFilter').click ->
+    $('#libraryOperators').toggleClass('hide')
+    $('#addTask').parent('li').removeClass('active')
+    taskId = workflow.tasks.length
+    task =
+      'id': taskId
+      'name': 'Wind_Data_Filter'
+      'nodeId': nodeSelected
+      'class': 'circle'
+      'operator':
+        'constraints':
+          'input': 'number': 1
+          'output': 'number': 1
+          'opSpecification':
+            'algorithm': 'name': 'Wind_Data_Filter'
+    tgraph.addNode(task)
+    workflow.tasks.push task
+  $('#WindStereotypeClassification').click ->
+    $('#libraryOperators').toggleClass('hide')
+    $('#addTask').parent('li').removeClass('active')
+    taskId = workflow.tasks.length
+    task =
+      'id': taskId
+      'name': 'Wind_Stereotype_Classification'
+      'nodeId': nodeSelected
+      'class': 'circle'
+      'operator':
+        'constraints':
+          'input': 'number': 1
+          'output': 'number': 1
+          'opSpecification':
+            'algorithm': 'name': 'Wind_Stereotype_Classification'
     tgraph.addNode(task)
     workflow.tasks.push task
   $('#tfIdf').click ->
@@ -280,13 +414,13 @@ $(document).ready ->
             'algorithm': 'name': 'TF_IDF'
     tgraph.addNode(task)
     workflow.tasks.push task
-  $('#kMeans').click ->
+  $('#WindKmeans').click ->
     $('#libraryOperators').toggleClass('hide')
     $('#addTask').parent('li').removeClass('active')
     taskId = workflow.tasks.length
     task =
       'id': taskId
-      'name': 'k-Means'
+      'name': 'Wind_Kmeans'
       'nodeId': nodeSelected
       'class': 'circle'
       'operator':
@@ -294,7 +428,7 @@ $(document).ready ->
           'input': 'number': 1
           'output': 'number': 1
           'opSpecification':
-            'algorithm': 'name': 'k-means'
+            'algorithm': 'name': 'Wind_Kmeans'
     tgraph.addNode(task)
     workflow.tasks.push task
 
@@ -351,7 +485,11 @@ $(document).ready ->
       'class': 'circle'
       'type': 'dataset'
       'operator':
-        'constraints': {}
+        'constraints':
+          'constraints':
+            'engine': 'FS': 'HDFS'
+        'execution': 'path': 'hdfs:///dataset_simulated/06/1.csv'
+        'optimization': 'size': '1E9'
     tgraph.addNode(task)
     workflow.tasks.push task
 

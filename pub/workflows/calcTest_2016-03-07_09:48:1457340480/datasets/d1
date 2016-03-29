@@ -1,3 +1,0 @@
-constraints.Execution.name=calced
-constraints.Execution.schema=(ID int, TS timestamp, DOY int, NUM int)
-constraints.Constraints.Engine.fs=hdfs

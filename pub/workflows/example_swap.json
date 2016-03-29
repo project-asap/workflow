@@ -1,0 +1,167 @@
+{
+  "name": "example_swap",
+  "nodes": [
+    {
+      "id": 0,
+      "name": "data",
+      "taskIds":[  
+        0
+      ],
+      "class": "circle",
+      "x": 200,
+      "y": 200,
+      "fixed": true
+    },
+    {
+      "id": 1,
+      "name": "calc",
+      "taskIds":[  
+        1
+      ],
+      "x": 300,
+      "y": 200,
+      "fixed": true
+    },
+    {
+      "id": 2,
+      "name": "filter",
+      "taskIds":[  
+        2
+      ],
+      "x": 400,
+      "y": 200,
+      "fixed": true
+    },
+    {
+      "id": 3,
+      "name": "result",
+      "taskIds":[  
+        3
+      ],
+      "class": "circle",
+      "x": 500,
+      "y": 200,
+      "fixed": true
+    }
+  ],
+  "edges": [
+    {
+      "id": 0,
+      "sourceId": 0,
+      "targetId": 1,
+      "class": "dashed"
+    },
+    {
+      "id": 1,
+      "sourceId": 1,
+      "targetId": 2
+    },
+    {
+      "id": 2,
+      "sourceId": 2,
+      "targetId": 3,
+      "class": "dashed"
+    }
+  ],
+  "tasks": [
+    {
+      "id": 0,
+      "name": "data",
+      "class": "circle",
+      "nodeId": 0,
+      "type": "dataset",
+      "operator": {
+        "Constraints":{  
+           "Engine":{  
+              "SQL":"PostgreSQL",
+              "location":"hdp1.itc.unipi.it"
+           },
+           "type":"SQL"
+        },
+        "Optimization":{"size":"4.50E08"},
+        "Execution":{  
+           "name":"CDR",
+           "schema":"(ID int, TS timestamp, user_id int, aID int)"
+        }
+      }
+    },
+    {
+      "id": 1,
+      "name": "calc",
+      "class": "circle",
+      "nodeId": 1,
+      "operator": {
+        "Constraints":{  
+           "opSpecification":{  
+              "Algorithm":{  
+                 "name":"Calc_SQL_query"
+              }
+           },
+           "Input":{"number":1},
+           "Input0":{"type":"SQL"},
+           "Output":{"number":1},
+           "Output0":{"type":"SQL"}
+        },
+        "Execution":{  
+           "Arguments":{  
+              "number":4
+           },
+           "Argument0":"In0.path",
+           "Argument1":"extract(doy from TS) AS DOY",
+           "Argument2":"DOY",
+           "Argument3":"dbname"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "filter",
+      "class": "circle",
+      "nodeId": 2,
+      "operator": {
+        "Constraints":{  
+           "opSpecification":{  
+              "Algorithm":{  
+                 "name":"Filter_SQL_query"
+              }
+           },
+           "Input":{"number":1},
+           "Input0":{"type":"SQL"},
+           "Output":{"number":1},
+           "Output0":{"type":"SQL"}
+        },
+        "Execution":{  
+           "Arguments":{  
+              "number":4
+           },
+           "Argument0":"In0.path",
+           "Argument1":"(TS >= '2015-01-31')",
+           "Argument2":"filtered",
+           "Argument3":"dbname"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "name": "result",
+      "class": "circle",
+      "nodeId": 3,
+      "type": "dataset",
+      "operator": {
+        "Constraints":{  
+           "Engine":{  
+              "SQL":"PostgreSQL",
+              "location":"hdp1.itc.unipi.it"
+           },
+           "type":"SQL"
+        },
+        "Optimization":{"size":"4.50E08"},
+        "Execution":{
+           "schema":"(ID int, TS timestamp, user_id int, aID int)"
+        }
+      }
+    }
+  ],
+  "taskLinks": [
+  ]
+}

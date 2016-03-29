@@ -600,11 +600,14 @@ class Workflow:
         os.makedirs(self.WLibrary+fname+'/'+'datasets')
         graph = ''
         targ = ''
+        dn = 1
         for edge in self.edges:
             inp = edge['sourceId']
             out = edge['targetId']
-            taskIid = self.findNode(inp)['taskIds'][0]
-            taskOid = self.findNode(out)['taskIds'][0]
+            nodeI = self.findNode(inp)
+            nodeO = self.findNode(out)
+            taskIid = nodeI['taskIds'][0]
+            taskOid = nodeO['taskIds'][0]
             taskI = self.findTask(taskIid)
             taskO = self.findTask(taskOid)
 
@@ -623,7 +626,26 @@ class Workflow:
                     file = open(os.path.join(self.WLibrary, fname, dir, task['name']), 'wb')
                     file.write(constr)
                     file.close()
-            graph = graph + taskI['name'] + ',' + taskO['name'] + '\n'
+            if ('type' in taskI and taskI['type'] == 'dataset'):
+                if len(nodeO['predecessors']) == 1:
+                    graph = graph + taskI['name'] + ',' + taskO['name'] + '\n'
+                else:
+                    graph = graph + taskI['name'] + ',' + taskO['name'] + ',' + str(nodeO['predecessors'].index(inp)) + '\n'
+            elif ('type' in taskO and taskO['type'] == 'dataset'):
+                if len(nodeI['successors']) == 1:
+                    graph = graph + taskI['name'] + ',' + taskO['name'] + '\n'
+                else:
+                    graph = graph + taskI['name'] + ',' + taskO['name'] + str(nodeI['successors'].index(out)) + '\n'
+            else:
+                if len(nodeI['successors']) == 1:
+                    graph = graph + taskI['name'] + ',d' + str(dn) + '\n'
+                else:
+                    graph = graph + taskI['name'] + ',d' + str(dn) + ',' + str(nodeI['successors'].index(out)) + '\n'
+                if len(nodeO['predecessors']) == 1:
+                    graph = graph + 'd' + str(dn) + ',' + taskO['name'] + '\n'
+                else:
+                    graph = graph + 'd' + str(dn) + ',' + taskO['name'] + ',' + str(nodeO['predecessors'].index(inp)) + '\n'
+                dn = dn+1
 
         graph = graph + targ + ',$$target\n'
         file = open(os.path.join(self.WLibrary, fname, 'graph'), 'wb')

@@ -1,3 +1,0 @@
-Execution.name=VORONOI
-Execution.schema=(rID int, aID int)
-Constraints.Engine.fs=hdfs

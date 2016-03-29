@@ -212,7 +212,7 @@ $(document).ready(function() {
     return workflow.tasks[taskSelected].operator = JSON.parse($(this).val());
   });
   $('#adddatastore').click(function() {
-    var node, nodeId, nodeName;
+    var node, nodeId, nodeName, task, taskId;
     nodeName = prompt('Please enter datastore name', '');
     nodeId = workflow.nodes.length;
     node = {
@@ -221,7 +221,30 @@ $(document).ready(function() {
       'class': 'circle'
     };
     graph.addNode(node);
-    return workflow.nodes.push(node);
+    workflow.nodes.push(node);
+    taskId = workflow.tasks.length;
+    task = {
+      'id': taskId,
+      'type': 'dataset',
+      'name': 'Filter Join',
+      'nodeId': nodeId,
+      'class': 'circle',
+      'operators': {
+        'constraints': {
+          'engine': {
+            'FS': 'HDFS'
+          }
+        },
+        'execution': {
+          'path': 'hdfs:///dataset_simulated/06/1.csv'
+        },
+        'optimization': {
+          'size': '1E9'
+        }
+      }
+    };
+    tgraph.addNode(task);
+    return workflow.tasks.push(task);
   });
   $('#addnode').click(function() {
     var node, nodeId, nodeName;
@@ -337,14 +360,43 @@ $(document).ready(function() {
     tgraph.addNode(task);
     return workflow.tasks.push(task);
   });
-  $('#PeakDetection').click(function() {
+  $('#WindPeakDetection').click(function() {
     var task, taskId;
     $('#libraryOperators').toggleClass('hide');
     $('#addTask').parent('li').removeClass('active');
     taskId = workflow.tasks.length;
     task = {
       'id': taskId,
-      'name': 'PeakDetection',
+      'name': 'Wind_Peak_Detection',
+      'nodeId': nodeSelected,
+      'class': 'circle',
+      'operator': {
+        'constraints': {
+          'input': {
+            'number': 2
+          },
+          'output': {
+            'number': 1
+          },
+          'opSpecification': {
+            'algorithm': {
+              'name': 'Wind_Peak_Detection'
+            }
+          }
+        }
+      }
+    };
+    tgraph.addNode(task);
+    return workflow.tasks.push(task);
+  });
+  $('#WindUserProfiling').click(function() {
+    var task, taskId;
+    $('#libraryOperators').toggleClass('hide');
+    $('#addTask').parent('li').removeClass('active');
+    taskId = workflow.tasks.length;
+    task = {
+      'id': taskId,
+      'name': 'Wind_User_Profiling',
       'nodeId': nodeSelected,
       'class': 'circle',
       'operator': {
@@ -357,7 +409,181 @@ $(document).ready(function() {
           },
           'opSpecification': {
             'algorithm': {
-              'name': 'PeakDetection'
+              'name': 'Wind_User_Profiling'
+            }
+          }
+        }
+      }
+    };
+    tgraph.addNode(task);
+    return workflow.tasks.push(task);
+  });
+  $('#WindPeakDetectionPublisher').click(function() {
+    var task, taskId;
+    $('#libraryOperators').toggleClass('hide');
+    $('#addTask').parent('li').removeClass('active');
+    taskId = workflow.tasks.length;
+    task = {
+      'id': taskId,
+      'name': 'Wind_Peak_Detection_Publisher',
+      'nodeId': nodeSelected,
+      'class': 'circle',
+      'operator': {
+        'constraints': {
+          'input': {
+            'number': 1
+          },
+          'output': {
+            'number': 1
+          },
+          'opSpecification': {
+            'algorithm': {
+              'name': 'Wind_Peak_Detection_Publisher'
+            }
+          }
+        }
+      }
+    };
+    tgraph.addNode(task);
+    return workflow.tasks.push(task);
+  });
+  $('#WindSpatioTemporalAggregation').click(function() {
+    var task, taskId;
+    $('#libraryOperators').toggleClass('hide');
+    $('#addTask').parent('li').removeClass('active');
+    taskId = workflow.tasks.length;
+    task = {
+      'id': taskId,
+      'name': 'Wind_Spatio_Temporal_Aggregation',
+      'nodeId': nodeSelected,
+      'class': 'circle',
+      'operator': {
+        'constraints': {
+          'input': {
+            'number': 1
+          },
+          'output': {
+            'number': 1
+          },
+          'opSpecification': {
+            'algorithm': {
+              'name': 'Wind_Spatio_Temporal_Aggregation'
+            }
+          }
+        }
+      }
+    };
+    tgraph.addNode(task);
+    return workflow.tasks.push(task);
+  });
+  $('#WindStatisticsPublisher').click(function() {
+    var task, taskId;
+    $('#libraryOperators').toggleClass('hide');
+    $('#addTask').parent('li').removeClass('active');
+    taskId = workflow.tasks.length;
+    task = {
+      'id': taskId,
+      'name': 'Wind_Statistics_Publisher',
+      'nodeId': nodeSelected,
+      'class': 'circle',
+      'operator': {
+        'constraints': {
+          'input': {
+            'number': 1
+          },
+          'output': {
+            'number': 1
+          },
+          'opSpecification': {
+            'algorithm': {
+              'name': 'Wind_Statistics_Publisher'
+            }
+          }
+        }
+      }
+    };
+    tgraph.addNode(task);
+    return workflow.tasks.push(task);
+  });
+  $('#WindDistributionComputation').click(function() {
+    var task, taskId;
+    $('#libraryOperators').toggleClass('hide');
+    $('#addTask').parent('li').removeClass('active');
+    taskId = workflow.tasks.length;
+    task = {
+      'id': taskId,
+      'name': 'Wind_Distribution_Computation',
+      'nodeId': nodeSelected,
+      'class': 'circle',
+      'operator': {
+        'constraints': {
+          'input': {
+            'number': 1
+          },
+          'output': {
+            'number': 1
+          },
+          'opSpecification': {
+            'algorithm': {
+              'name': 'Wind_Distribution_Computation'
+            }
+          }
+        }
+      }
+    };
+    tgraph.addNode(task);
+    return workflow.tasks.push(task);
+  });
+  $('#WindDataFilter').click(function() {
+    var task, taskId;
+    $('#libraryOperators').toggleClass('hide');
+    $('#addTask').parent('li').removeClass('active');
+    taskId = workflow.tasks.length;
+    task = {
+      'id': taskId,
+      'name': 'Wind_Data_Filter',
+      'nodeId': nodeSelected,
+      'class': 'circle',
+      'operator': {
+        'constraints': {
+          'input': {
+            'number': 1
+          },
+          'output': {
+            'number': 1
+          },
+          'opSpecification': {
+            'algorithm': {
+              'name': 'Wind_Data_Filter'
+            }
+          }
+        }
+      }
+    };
+    tgraph.addNode(task);
+    return workflow.tasks.push(task);
+  });
+  $('#WindStereotypeClassification').click(function() {
+    var task, taskId;
+    $('#libraryOperators').toggleClass('hide');
+    $('#addTask').parent('li').removeClass('active');
+    taskId = workflow.tasks.length;
+    task = {
+      'id': taskId,
+      'name': 'Wind_Stereotype_Classification',
+      'nodeId': nodeSelected,
+      'class': 'circle',
+      'operator': {
+        'constraints': {
+          'input': {
+            'number': 1
+          },
+          'output': {
+            'number': 1
+          },
+          'opSpecification': {
+            'algorithm': {
+              'name': 'Wind_Stereotype_Classification'
             }
           }
         }
@@ -395,14 +621,14 @@ $(document).ready(function() {
     tgraph.addNode(task);
     return workflow.tasks.push(task);
   });
-  $('#kMeans').click(function() {
+  $('#WindKmeans').click(function() {
     var task, taskId;
     $('#libraryOperators').toggleClass('hide');
     $('#addTask').parent('li').removeClass('active');
     taskId = workflow.tasks.length;
     task = {
       'id': taskId,
-      'name': 'k-Means',
+      'name': 'Wind_Kmeans',
       'nodeId': nodeSelected,
       'class': 'circle',
       'operator': {
@@ -415,7 +641,7 @@ $(document).ready(function() {
           },
           'opSpecification': {
             'algorithm': {
-              'name': 'k-means'
+              'name': 'Wind_Kmeans'
             }
           }
         }
@@ -508,7 +734,19 @@ $(document).ready(function() {
       'class': 'circle',
       'type': 'dataset',
       'operator': {
-        'constraints': {}
+        'constraints': {
+          'constraints': {
+            'engine': {
+              'FS': 'HDFS'
+            }
+          }
+        },
+        'execution': {
+          'path': 'hdfs:///dataset_simulated/06/1.csv'
+        },
+        'optimization': {
+          'size': '1E9'
+        }
       }
     };
     tgraph.addNode(task);

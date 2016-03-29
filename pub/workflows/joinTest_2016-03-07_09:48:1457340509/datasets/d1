@@ -1,3 +1,0 @@
-Execution.name=joined
-Execution.schema=(ID int, TS timestamp, NUM int, aID int, rID int)
-Constraints.Engine.fs=hdfs

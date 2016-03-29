@@ -1,0 +1,206 @@
+{
+  "name": "example_distribute",
+  "nodes": [
+    {
+      "id": 0,
+      "name": "d1",
+      "taskIds":[  
+        0
+      ],
+      "class": "circle",
+      "x": 200,
+      "y": 200,
+      "fixed": true
+    },
+    {
+      "id": 1,
+      "name": "d2",
+      "taskIds":[  
+        1
+      ],
+      "class": "circle",
+      "x": 200,
+      "y": 300,
+      "fixed": true
+    },
+    {
+      "id": 2,
+      "name": "join",
+      "taskIds":[  
+        2
+      ],
+      "x": 300,
+      "y": 250,
+      "fixed": true
+    },
+    {
+      "id": 3,
+      "name": "filter",
+      "taskIds":[  
+        3
+      ],
+      "x": 400,
+      "y": 250,
+      "fixed": true
+    },
+    {
+      "id": 4,
+      "name": "result",
+      "taskIds":[  
+        4
+      ],
+      "class": "circle",
+      "x": 500,
+      "y": 250,
+      "fixed": true
+    }
+  ],
+  "edges": [
+    {
+      "id": 0,
+      "sourceId": 0,
+      "targetId": 2,
+      "class": "dashed"
+    },
+    {
+      "id": 1,
+      "sourceId": 1,
+      "targetId": 2,
+      "class": "dashed"
+    },
+    {
+      "id": 2,
+      "sourceId": 2,
+      "targetId": 3
+    },
+    {
+      "id": 3,
+      "sourceId": 3,
+      "targetId": 4,
+      "class": "dashed"
+    }
+  ],
+  "tasks": [
+    {
+      "id": 0,
+      "name": "d1",
+      "class": "circle",
+      "nodeId": 0,
+      "type": "dataset",
+      "operator": {
+        "Constraints":{  
+           "Engine":{  
+              "SQL":"PostgreSQL",
+              "location":"hdp1.itc.unipi.it"
+           },
+           "type":"SQL"
+        },
+        "Optimization":{"size":"4.50E08"},
+        "Execution":{  
+           "name":"CDR",
+           "schema":"(ID int, TS timestamp, user_id int, aID int)"
+        }
+      }
+    },
+    {
+      "id": 1,
+      "name": "d2",
+      "class": "circle",
+      "nodeId": 1,
+      "type": "dataset",
+      "operator": {
+        "Constraints":{  
+           "Engine":{  
+              "SQL":"PostgreSQL",
+              "location":"hdp1.itc.unipi.it"
+           },
+           "type":"SQL"
+        },
+        "Optimization":{"size":"4.50E08"},
+        "Execution":{  
+           "name":"antennas",
+           "schema":"(aID int, rID int)"
+        }
+      }
+    },
+    {  
+       "id":2,
+       "nodeId":2,
+       "name":"Join",
+       "operator":{  
+          "Constraints":{  
+             "opSpecification":{  
+                "Algorithm":{  
+                   "name":"Join_SQL_query"
+                }
+             },
+             "Input":{"number":2},
+             "Input0":{"type":"SQL"},
+             "Input1":{"type":"SQL"},
+             "Output":{"number":1},
+             "Output0":{"type":"SQL"}
+          },
+          "Execution":{  
+             "Arguments":{  
+                "number":4
+             },
+             "Argument0":"In0.path",
+             "Argument1":"In1.path",
+             "Argument2":"(aID)",
+             "Argument3":"joined",
+             "Argument4":"dbname"
+          }
+       }
+    },
+    {
+      "id": 3,
+      "name": "filter",
+      "class": "circle",
+      "nodeId": 3,
+      "operator": {
+        "Constraints":{  
+           "opSpecification":{  
+              "Algorithm":{  
+                 "name":"Filter_SQL_query"
+              }
+           },
+           "Input":{"number":1},
+           "Input0":{"type":"SQL"},
+           "Output":{"number":1},
+           "Output0":{"type":"SQL"}
+        },
+        "Execution":{  
+           "Arguments":{  
+              "number":4
+           },
+           "Argument0":"In0.path",
+           "Argument1":"(aID == 1)",
+           "Argument2":"filtered",
+           "Argument3":"dbname"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "result",
+      "class": "circle",
+      "nodeId": 4,
+      "type": "dataset",
+      "operator": {
+        "Constraints":{  
+           "Engine":{  
+              "SQL":"PostgreSQL",
+              "location":"hdp1.itc.unipi.it"
+           },
+           "type":"SQL"
+        },
+        "Optimization":{"size":"4.50E08"},
+        "Execution":{
+           "schema":"(ID int, TS timestamp, user_id int, aID int, rID int)"
+        }
+      }
+    }
+  ],
+  "taskLinks": [
+  ]
+}
