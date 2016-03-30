@@ -645,6 +645,9 @@ class Workflow:
                     graph = graph + 'd' + str(dn) + ',' + taskO['name'] + '\n'
                 else:
                     graph = graph + 'd' + str(dn) + ',' + taskO['name'] + ',' + str(nodeO['predecessors'].index(inp)) + '\n'
+                file = open(os.path.join(self.WLibrary, fname, 'datasets', 'd'+str(dn)), 'wb')
+                file.write('')
+                file.close()
                 dn = dn+1
 
         graph = graph + targ + ',$$target\n'
