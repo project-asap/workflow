@@ -195,6 +195,36 @@ $(document).ready ->
     graph.addNode(node)
     workflow.nodes.push node
 
+  $('#removeNode').click ->
+    $('#node').addClass('hide')
+    graph.removeNode(nodeSelected)
+    i = 0
+    while i < workflow.edges.length
+      if workflow.edges[i]['sourceId'] == nodeSelected or workflow.edges[i]['targetId'] == nodeSelected
+        workflow.edges.splice i, 1
+      else
+        i++
+    i = 0
+    while i < workflow.tasks.length
+      if workflow.tasks[i]['nodeId'] == nodeSelected
+        tId = workflow.tasks[i]['id']
+        workflow.tasks.splice i, 1
+        j = 0
+        while j < workflow.taskLinks.length
+          if workflow.taskLinks[j]['sourceId'] == tId or workflow.taskLinks[j]['targetId'] == tId
+            workflow.taskLinks.splice j, 1
+          else
+            j++
+      else
+        i++
+    i = 0
+    while i < workflow.nodes.length
+      if workflow.nodes[i]['id'] == nodeSelected
+        workflow.nodes.splice i, 1
+      else
+        i++
+    return
+
   $('#addlink').click ->
     addingLink = !addingLink
     $('#addlink').parent('li').toggleClass('active')

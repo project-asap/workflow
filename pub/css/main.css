@@ -30,6 +30,10 @@ body {
     padding-right: 20px;
     padding-left: 20px;
 }
+.nav-sidebar > li#nodeName > label {
+    padding-left: 20px;
+}
+
 .nav-sidebar > .active > a,
 .nav-sidebar > .active > a:hover,
 .nav-sidebar > .active > a:focus {
@@ -57,7 +61,6 @@ label {
 
 #nodeTitle, #taskTitle {
     margin-left: 15px;
-    margin-bottom: 15px;
     padding-left: 15px;
     width: 200px;
 }

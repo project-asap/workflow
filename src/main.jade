@@ -36,9 +36,12 @@ append content
           li
             a#addlink(href="#") Add links
         div#node.hide
-          div#nodeName
-            label(for="nodeTitle") Node title:
-            input#nodeTitle
+          ul.nav.nav-sidebar
+            li#nodeName
+              label(for="nodeTitle") Node title:
+              input#nodeTitle
+            li
+              a#removeNode(href="#") Remove Node
           div#tasksBoard
           ul.nav.nav-sidebar
             li

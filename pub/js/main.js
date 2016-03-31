@@ -17,7 +17,7 @@ nodeLink = false;
 taskLink = false;
 
 openWorkflow = function(w) {
-  var edge, i, j, len, len1, node, ref, ref1;
+  var edge, k, l, len, len1, node, ref, ref1;
   workflow = w;
   graph.clean();
   $('#node').addClass('hide');
@@ -28,30 +28,30 @@ openWorkflow = function(w) {
   $('#addTask').parent('li').removeClass('active');
   addingLink = false;
   ref = w.nodes;
-  for (i = 0, len = ref.length; i < len; i++) {
-    node = ref[i];
+  for (k = 0, len = ref.length; k < len; k++) {
+    node = ref[k];
     graph.addNode(node);
   }
   ref1 = w.edges;
-  for (j = 0, len1 = ref1.length; j < len1; j++) {
-    edge = ref1[j];
+  for (l = 0, len1 = ref1.length; l < len1; l++) {
+    edge = ref1[l];
     graph.addLink(edge);
   }
 };
 
 showTasks = function(nodeId) {
-  var i, j, len, len1, link, ref, ref1, task;
+  var k, l, len, len1, link, ref, ref1, task;
   tgraph.clean();
   ref = workflow.tasks;
-  for (i = 0, len = ref.length; i < len; i++) {
-    task = ref[i];
+  for (k = 0, len = ref.length; k < len; k++) {
+    task = ref[k];
     if (parseInt(task.nodeId) === nodeId) {
       tgraph.addNode(task);
     }
   }
   ref1 = workflow.taskLinks;
-  for (j = 0, len1 = ref1.length; j < len1; j++) {
-    link = ref1[j];
+  for (l = 0, len1 = ref1.length; l < len1; l++) {
+    link = ref1[l];
     tgraph.addLink(link);
   }
 };
@@ -72,7 +72,7 @@ loadFile = function() {
 };
 
 selectNode = function(id, type) {
-  var i, len, link, newclass, node, oldclass, ref, task;
+  var k, len, link, newclass, node, oldclass, ref, task;
   $('#node').removeClass('hide');
   if (type === 'task') {
     $('#taskName').removeClass('hide');
@@ -125,8 +125,8 @@ selectNode = function(id, type) {
     oldclass = $('#wlBoard').find('.node' + nodeSelected).attr('class');
     $('#wlBoard').find('.node' + nodeSelected).attr('class', oldclass + ' selected');
     ref = workflow.nodes;
-    for (i = 0, len = ref.length; i < len; i++) {
-      node = ref[i];
+    for (k = 0, len = ref.length; k < len; k++) {
+      node = ref[k];
       if (parseInt(node.id) === id) {
         $('#nodeTitle').val(node.name);
       }
@@ -190,12 +190,12 @@ $(document).ready(function() {
     return saveAs(blob, workflow.name + '.json');
   });
   $('#nodeTitle').on('input', function() {
-    var i, len, node, ref, results;
+    var k, len, node, ref, results;
     $('#wlBoard').find('.node' + nodeSelected).find('text').text($(this).val());
     ref = workflow.nodes;
     results = [];
-    for (i = 0, len = ref.length; i < len; i++) {
-      node = ref[i];
+    for (k = 0, len = ref.length; k < len; k++) {
+      node = ref[k];
       if (parseInt(node.id) === nodeSelected) {
         results.push(node.name = $(this).val());
       } else {
@@ -256,6 +256,44 @@ $(document).ready(function() {
     };
     graph.addNode(node);
     return workflow.nodes.push(node);
+  });
+  $('#removeNode').click(function() {
+    var i, j, tId;
+    $('#node').addClass('hide');
+    graph.removeNode(nodeSelected);
+    i = 0;
+    while (i < workflow.edges.length) {
+      if (workflow.edges[i]['sourceId'] === nodeSelected || workflow.edges[i]['targetId'] === nodeSelected) {
+        workflow.edges.splice(i, 1);
+      } else {
+        i++;
+      }
+    }
+    i = 0;
+    while (i < workflow.tasks.length) {
+      if (workflow.tasks[i]['nodeId'] === nodeSelected) {
+        tId = workflow.tasks[i]['id'];
+        workflow.tasks.splice(i, 1);
+        j = 0;
+        while (j < workflow.taskLinks.length) {
+          if (workflow.taskLinks[j]['sourceId'] === tId || workflow.taskLinks[j]['targetId'] === tId) {
+            workflow.taskLinks.splice(j, 1);
+          } else {
+            j++;
+          }
+        }
+      } else {
+        i++;
+      }
+    }
+    i = 0;
+    while (i < workflow.nodes.length) {
+      if (workflow.nodes[i]['id'] === nodeSelected) {
+        workflow.nodes.splice(i, 1);
+      } else {
+        i++;
+      }
+    }
   });
   $('#addlink').click(function() {
     addingLink = !addingLink;
