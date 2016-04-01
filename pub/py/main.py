@@ -11,7 +11,8 @@ class Workflow:
 
     def __init__(self, fname):
         if not os.path.exists(fname):
-            sys.exit('ERROR: File %s was not found!' % fname)
+            print 'ERROR: File '+fname+' was not found!'
+            sys.exit(0)
         fl = open(fname, 'r')
         wl = yaml.safe_load(fl)
         fl.close()
@@ -37,48 +38,128 @@ class Workflow:
             node['taskIds'] = []
         for task in self.tasks:
             nid = task['nodeId']
-            self.findNode(nid)['taskIds'].append(task['id'])
+            node = self.findNode(nid)
+            if task['id'] not in node['taskIds']:
+                node['taskIds'].append(task['id'])
         for edge in self.edges:
             inp = edge['sourceId']
             out = edge['targetId']
-            self.findNode(inp)['successors'].append(out)
-            self.findNode(out)['predecessors'].append(inp)
-            edge['analysis'] = {}
-            for task in self.tasks:
-                inpdict = {}
-                outdict = {}
-                edge['analysis']['data_info'] = {}
-                if (task['nodeId'] == inp):
-                    if ('json' in task.keys()):
-                        inpdict = copy.deepcopy(task['json'].values()[0].values()[0])
-                        # if ('data' in task['json'].keys()):
-                        #     inpdict = task['json'].values()[0].values()[0]
-                        # else:
-                        #     inpdict = task['json'].values()[0].values()[0]['output']
-                        # edge['analysis']['data_info'] = inpdict['data_info'].copy()
-                        edge['analysis']['data_info'].update(inpdict)
-                if (task['nodeId'] == out):
-                    if ('json' in task.keys()):
-                        outdict = task['json'].values()[0].values()[0]
-                        # if ('data' in task['json'].keys()):
-                        #     outdict = task['json'].values()[0].values()[0]
-                        # else:
-                        #     outdict = task['json'].values()[0].values()[0]['input']
-                        # edge['analysis']['data_info'].update(outdict['data_info'])
-                        edge['analysis']['data_info'].update(outdict)
-                if ('engine' in inpdict.keys() and 'engine' in outdict.keys()):
-                    if (inpdict['engine']['DB'] == outdict['engine']['DB']):
-                        edge['analysis']['engine'] = copy.deepcopy(inpdict['engine'])
-                    else:
-                        edge['analysis']['engine'] = {}
-                        edge['analysis']['engine']['from'] = copy.deepcopy(inpdict['engine'])
-                        edge['analysis']['engine']['to'] = copy.deepcopy(outdict['engine'])
-                        edge['analysis']['message'].append('formats convertation')
-                elif ('engine' in inpdict.keys()):
-                    edge['analysis']['engine'] = copy.deepcopy(inpdict['engine'])
-                elif ('engine' in outdict.keys()):
-                    edge['analysis']['engine'] = copy.deepcopy(outdict['engine'])
-            # print edge['analysis']
+            nodeI = self.findNode(inp)
+            nodeJ = self.findNode(out)
+            if out not in nodeI['successors']:
+                nodeI['successors'].append(out)
+            if inp not in nodeJ['predecessors']:
+                nodeJ['predecessors'].append(inp)
+        # Checking for cycle (TODO: optimise it)
+        def retSuccessors(self, nIds):
+            sucs = []
+            for nId in nIds:
+                for suc in self.findNode(nId)['successors']:
+                    if suc not in sucs:
+                        sucs.append(suc)
+            return sucs
+        for node in self.nodes:
+            nId = node['id']
+            nIds = [nId]
+            iter = 0
+            while len(nIds) != 0 and iter < 5:
+                nIds = retSuccessors(self, nIds)
+                if nId in nIds:
+                    print 'ERROR: Workflow contains a cycle!'
+                    sys.exit(0)
+                iter = iter+1
+        # Splitting multi-task vertices
+        for node in self.nodes:
+            if len(node['taskIds']) == 0:
+                print 'ERROR: Node '+node['name']+' has no tasks inside!'
+                sys.exit(0)
+            if len(node['taskIds']) > 1:
+                if self.isNodeBranching(node['id']):
+                    print 'ERROR: Splitting of branching node '+node['name']+' is not supported yet!'
+                    sys.exit(0)
+                tList = [node['taskIds'][0]]
+                for tId in node['taskIds']:
+                    task = self.findTask(tId)
+                    if 'schema' not in task['operator'].keys() or 'input' not in task['operator']['schema'].keys() or 'output' not in task['operator']['schema'].keys():
+                        print 'ERROR: Task '+task['name']+' hasn\'t schema description, splitting can\'t be performed'
+                        sys.exit(0)
+                    if tId in tList:
+                        continue
+                    if set(task['operator']['schema']['output']) == set(self.findTask(tList[0])['operator']['schema']['input']):
+                        tList = [tId] + tList
+                    if set(task['operator']['schema']['input']) == set(self.findTask(tList[-1])['operator']['schema']['output']):
+                        tList.append(tId)
+                if len(tList) != len(node['taskIds']):
+                    print 'ERROR: Splitting wasn\'t performed!'
+                    sys.exit(0)
+                node['taskIds'] = [tList[0]]
+                node['name'] = self.findTask(tList[0])['name']
+                self.findTask(tList[0])['nodeId'] = node['id']
+                nodePrev = node
+                for edge in self.edges:
+                    if edge['sourceId'] == nodePrev['id']:
+                        eId = edge['id']
+                        lId = edge['targetId']
+                for tId in tList[1:]:
+                    j = str(node['id'])+'0'+str(tId)
+                    self.findTask(tId)['nodeId'] = j
+                    cNode = {}
+                    cNode['id'] = j
+                    cNode['taskIds'] = [tId]
+                    cNode['name'] = self.findTask(tId)['name']
+                    cNode['predecessors'] = [nodePrev['id']]
+                    cNode['successors'] = []
+                    nodePrev['successors'] = [j]
+                    self.nodes.append(cNode)
+                    self.edges.append({
+                        'id': str(eId)+'0'+str(nodePrev['id']),
+                        'sourceId': nodePrev['id'],
+                        'targetId': j
+                    })
+                    nodePrev = self.findNode(j)
+                self.findEdge(eId)['sourceId'] = nodePrev['id']
+                nodePrev['successors'] = [lId]
+        # Augmentting the workflow with associative tasks
+        for edge in self.edges:
+            nodeI = self.findNode(edge['sourceId'])
+            nodeJ = self.findNode(edge['targetId'])
+            taskI = self.findTask(nodeI['taskIds'][0])
+            taskJ = self.findTask(nodeJ['taskIds'][0])
+            if 'operator' in taskI.keys() and 'engine' in taskI['operator'].keys() and 'fs' in taskI['operator']['engine'].keys() and 'operator' in taskJ.keys() and 'engine' in taskJ['operator'].keys() and 'fs' in taskJ['operator']['engine'].keys():
+                if taskI['operator']['engine']['fs'] != taskJ['operator']['engine']['fs']:
+                    nId = str(len(self.nodes))+str(1)
+                    tId = str(len(self.tasks))+str(1)
+                    self.nodes.append({
+                        'id': nId,
+                        'taskIds': [tId],
+                        'name': 'format_conv',
+                        'predecessors': [nodeI['id']],
+                        'successors': [nodeJ['id']]
+                    })
+                    self.tasks.append({
+                        'id': tId,
+                        'name': 'format_conv',
+                        'nodeId': nId,
+                        'operator': {
+                            'constraints': {
+                                'input': 1,
+                                'output': 1,
+                                'opSpecification': {
+                                    'algorithm': 'convert',
+                                    'from': taskI['operator']['engine']['fs'],
+                                    'to': taskJ['operator']['engine']['fs']
+                                }
+                            }
+                          }
+                    })
+                    for edge in self.edges:
+                        if edge['sourceId'] == nodeI['id'] and edge['targetId'] == nodeJ['id']:
+                            edge['targetId'] = nId
+                    self.edges.append({
+                        'id': str(len(self.edges))+str(1),
+                        'sourceId': nId,
+                        'targetId': nodeJ['id']
+                    })
 
     def optimise(self):
         moved = -1
@@ -224,11 +305,14 @@ class Workflow:
 
     def swap(self, i, j):
         if (not self.isNodesAdjacent(i, j)):
-            sys.exit('ERROR: Swapping of nonadjacent nodes!')
+            print 'ERROR: Swapping of nonadjacent nodes!'
+            sys.exit(0)
         if (self.isNodeBranching(i)):
-            sys.exit('ERROR: Swapping of branching node %s!' % i)
+            print 'ERROR: Swapping of branching node '+str(i)+'!'
+            sys.exit(0)
         if (self.isNodeBranching(j)):
-            sys.exit('ERROR: Swapping of branching node %s!' % j)
+            print 'ERROR: Swapping of branching node '+str(j)+'!'
+            sys.exit(0)
         nodeI = self.findNode[i]
         nodeJ = self.findNode[j]
         if (j in nodeI['predecessors']):
@@ -250,16 +334,21 @@ class Workflow:
 
     def distribute(self, b, i):
         if (not self.isNodesAdjacent(b, i)):
-            sys.exit('ERROR: Distributing of nonadjacent nodes!')
+            print 'ERROR: Distributing of nonadjacent nodes!'
+            sys.exit(0)
         # if (self.isNodeBranching(i)):
-        #     sys.exit('ERROR: Distributing of branching node %s!' % i)
+        #     print 'ERROR: Distributing of branching node '+str(i)+'!'
+        #     sys.exit(0)
         if (self.isNodeUnary(b)):
-            sys.exit('ERROR: Distributing over unary node %s!' % b)
+            print 'ERROR: Distributing over unary node '+str(b)+'!'
+            sys.exit(0)
         nodeB = self.findNode(b)
         if (i in nodeB['predecessors'] and len(nodeB['successors']) <> 2):
-            sys.exit('ERROR: Distributing supported only into two parallel branches (you have %s branches)!' % len(nodeB['successors']))
+            print 'ERROR: Distributing supported only into two parallel branches (you have '+str(len(nodeB['successors']))+' branches)!'
+            sys.exit(0)
         if (i in nodeB['successors'] and len(nodeB['predecessors']) <> 2):
-            sys.exit('ERROR: Distributing supported only into two parallel branches (you have %s branches)!' % len(nodeB['predecessors']))
+            print 'ERROR: Distributing supported only into two parallel branches (you have '+str(len(nodeB['predecessors']))+' branches)!'
+            sys.exit(0)
 
         id = str(i)
         i = id+'.1'
@@ -293,7 +382,8 @@ class Workflow:
                 elif (edge['sourceId'] == b):
                     branches.append(edge['id'])
             if (len(branches) <> 2):
-                sys.exit('ERROR: Distributing supported only into two parallel branches (you have %s branches)!' % len(branches))
+                print 'ERROR: Distributing supported only into two parallel branches (you have '+str(len(branches))+' branches)!'
+                sys.exit(0)
             for k in range(2):
                 edge = self.findEdge(branches[k])
                 id = [i, j][k]
@@ -317,7 +407,8 @@ class Workflow:
                 elif (edge['targetId'] == b):
                     branches.append(edge['id'])
             if (len(branches) <> 2):
-                sys.exit('ERROR: Distributing supported only into two parallel branches (you have %s branches)!' % len(branches))
+                print 'ERROR: Distributing supported only into two parallel branches (you have '+str(len(branches))+' branches)!'
+                sys.exit(0)
             for k in range(2):
                 edge = self.findEdge(branches[k])
                 id = [i, j][k]
@@ -329,16 +420,20 @@ class Workflow:
                 edge['sourceId'] = id
                 self.findNode(id)['successors'].append(edge['targetId'])
         else:
-            sys.exit('ERROR: Unexpected conditions!')
+            print 'ERROR: Unexpected conditions!'
+            sys.exit(0)
         return self
 
     def factorize(self, b, i, j):
         if (not self.isNodesAdjacent(b, i) or not self.isNodesAdjacent(b, j)):
-            sys.exit('ERROR: Factorizing of nonadjacent nodes!')
+            print 'ERROR: Factorizing of nonadjacent nodes!'
+            sys.exit(0)
         if (not self.isNodesHomologous(i, j)):
-            sys.exit('ERROR: Factorizing of non homologous nodes!')
+            print 'ERROR: Factorizing of non homologous nodes!'
+            sys.exit(0)
         if (self.isNodeUnary(b)):
-            sys.exit('ERROR: Factorizing over unary node %s!' % b)
+            print 'ERROR: Factorizing over unary node '+str(b)+'!'
+            sys.exit(0)
         if (i.endswith(('.1', '.2')) and j.endswith(('.1', '.2'))):
             id = i[:-2]
         else:
@@ -359,7 +454,8 @@ class Workflow:
         ei = 0
         if (i in nodeB['successors'] and j in nodeB['successors']):
             if (len(nodeB['predecessors']) <> 1):
-                sys.exit('ERROR: Unexpected conditions!')
+                print 'ERROR: Unexpected conditions!'
+                sys.exit(0)
             for eid, edge in self.edges:
                 if str(edge['id']) >= str(ei):
                     ei = edge['id']+str(1)
@@ -390,7 +486,8 @@ class Workflow:
             nodeId['successors'].append(b)
         elif (i in nodeB['predecessors'] and j in nodeB['predecessors']):
             if (len(nodeB['successors']) <> 1):
-                sys.exit('ERROR: Unexpected conditions!')
+                print 'ERROR: Unexpected conditions!'
+                sys.exit(0)
             for eid, edge in self.edges:
                 if str(edge['id']) >= str(ei):
                     ei = edge['id']+str(1)
@@ -420,17 +517,21 @@ class Workflow:
             nodeB['successors'].append(id)
             nodeId['predecessors'].append(b)
         else:
-            sys.exit('ERROR: Unexpected conditions!')
+            print 'ERROR: Unexpected conditions!'
+            sys.exit(0)
 
         return self
 
     def compose(self, i, j):
         if (not self.isNodesAdjacent(i, j)):
-            sys.exit('ERROR: Composing of nonadjacent nodes!')
+            print 'ERROR: Composing of nonadjacent nodes!'
+            sys.exit(0)
         if (self.isNodeBranching(i)):
-            sys.exit('ERROR: Composing of branching node %s!' % i)
+            print 'ERROR: Composing of branching node '+str(i)+'!'
+            sys.exit(0)
         if (self.isNodeBranching(j)):
-            sys.exit('ERROR: Composing of branching node %s!' % j)
+            print 'ERROR: Composing of branching node '+str(j)+'!'
+            sys.exit(0)
         nodeI = self.findNode(i)
         nodeJ = self.findNode(j)
         if (j in nodeI['predecessors']):
@@ -465,9 +566,11 @@ class Workflow:
 
     def decompose(self, i):
         if (self.isNodeBranching(i)):
-            sys.exit('ERROR: Decomposing of branching node %s!' % i)
+            print 'ERROR: Decomposing of branching node '+str(i)+'!'
+            sys.exit(0)
         if ('+' not in str(i)):
-            sys.exit('ERROR: Decomposing supported only for previously composed of factorized nodes!')
+            print 'ERROR: Decomposing supported only for previously composed of factorized nodes!'
+            sys.exit(0)
         id = str(i)
         i = id.split('+')[0]
         j = id[(len(i)+1):]
@@ -558,19 +661,22 @@ class Workflow:
         for node in self.nodes:
             if str(id) == str(node['id']):
                 return node
-        sys.exit('ERROR: Node with id %s not found!' % id)
+        print 'ERROR: Node with id '+str(id)+' not found!'
+        sys.exit(0)
 
     def findTask(self, id):
         for task in self.tasks:
             if str(id) == str(task['id']):
                 return task
-        sys.exit('ERROR: Task with id %s not found!' % id)
+        print 'ERROR: Task with id '+str(id)+' not found!'
+        sys.exit(0)
 
     def findEdge(self, id):
         for edge in self.edges:
             if str(id) == str(edge['id']):
                 return edge
-        sys.exit('ERROR: Edge with id %s not found!' % id)
+        print 'ERROR: Edge with id '+str(id)+' not found!'
+        sys.exit(0)
 
     def changeNodeId(self, old, new):
         self.findNode(old)['id'] = new
@@ -595,7 +701,8 @@ class Workflow:
         if not os.path.exists(self.WLibrary+fname):
             os.makedirs(self.WLibrary+fname)
         else:
-            sys.exit('ERROR: Folder %s is exist!' % fname)
+            print 'ERROR: Folder '+fname+' is exist!'
+            sys.exit(0)
         os.makedirs(self.WLibrary+fname+'/'+'operators')
         os.makedirs(self.WLibrary+fname+'/'+'datasets')
         graph = ''
@@ -697,7 +804,8 @@ if __name__ == "__main__":
         action = sys.argv[1]
         fname = sys.argv[2]
     else:
-        sys.exit('ERROR: Wrong number of arguments!')
+        print 'ERROR: Wrong number of arguments!'
+        sys.exit(0)
 
     w = Workflow(fname)
 
@@ -714,5 +822,6 @@ if __name__ == "__main__":
         w.analyse()
         w.execute()
     else:
-        sys.exit('ERROR: Unsupported action %s!' % sys.argv[1])
+        print 'ERROR: Unsupported action '+sys.argv[1]+'!'
+        sys.exit(0)
 

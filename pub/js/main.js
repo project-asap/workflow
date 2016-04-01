@@ -1,4 +1,4 @@
-var addingLink, graph, loadFile, node1, node2, nodeLink, nodeSelected, openWorkflow, selectNode, showTasks, taskLink, taskSelected, tgraph, workflow;
+var addingLink, findTask, graph, loadFile, node1, node2, nodeLink, nodeSelected, openWorkflow, selectNode, showTasks, taskLink, taskSelected, tgraph, workflow;
 
 workflow = null;
 
@@ -36,6 +36,17 @@ openWorkflow = function(w) {
   for (l = 0, len1 = ref1.length; l < len1; l++) {
     edge = ref1[l];
     graph.addLink(edge);
+  }
+};
+
+findTask = function(taskId) {
+  var k, len, ref, task;
+  ref = workflow.tasks;
+  for (k = 0, len = ref.length; k < len; k++) {
+    task = ref[k];
+    if (parseInt(task.id) === taskId) {
+      return task;
+    }
   }
 };
 
@@ -87,7 +98,7 @@ selectNode = function(id, type) {
     taskSelected = id;
     oldclass = $('#tasksBoard').find('.node' + taskSelected).attr('class');
     $('#tasksBoard').find('.node' + taskSelected).attr('class', oldclass + ' selected');
-    task = workflow.tasks[id];
+    task = findTask(id);
     $('#taskTitle').val(task.name);
     $('#metadataEditor').val(JSON.stringify(task.operator, null, 2));
     if (addingLink) {
@@ -206,10 +217,10 @@ $(document).ready(function() {
   });
   $('#taskTitle').on('input', function() {
     $('#tasksBoard').find('.node' + taskSelected).find('text').text($(this).val());
-    return workflow.tasks[taskSelected].name = $(this).val();
+    return findTask(taskSelected).name = $(this).val();
   });
   $('#metadataEditor').on('input', function() {
-    return workflow.tasks[taskSelected].operator = JSON.parse($(this).val());
+    return findTask(taskSelected).operator = JSON.parse($(this).val());
   });
   $('#adddatastore').click(function() {
     var node, nodeId, nodeName, task, taskId;
@@ -810,7 +821,7 @@ $(document).ready(function() {
         return openWorkflow(newWorkflow);
       },
       error: function(jqXHR, textStatus, errorThrown) {
-        return console.log(textStatus);
+        return alert(jqXHR);
       }
     });
   });

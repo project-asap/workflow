@@ -37,56 +37,56 @@
          "taskIds":[  
             4
          ],
-         "name":"filter"
+         "name":"filter_region"
       },
       {  
          "id":5,
          "taskIds":[  
             5
          ],
-         "name":"calc"
+         "name":"extract_ts"
       },
       {  
          "id":6,
          "taskIds":[  
             6
          ],
-         "name":"calc"
+         "name":"calc_num"
       },
       {  
          "id":7,
          "taskIds":[  
             7
          ],
-         "name":"filter"
+         "name":"filter_test"
       },
       {  
          "id":8,
          "taskIds":[  
             8
          ],
-         "name":"filter"
+         "name":"filter_train"
       },
       {  
          "id":9,
          "taskIds":[  
             9
          ],
-         "name":"calc"
+         "name":"calc_sum"
       },
       {  
          "id":10,
          "taskIds":[  
             10
          ],
-         "name":"calc"
+         "name":"week_aggr"
       },
       {  
          "id":11,
          "taskIds":[  
             11
          ],
-         "name":"calc"
+         "name":"calc_sum"
       },
       {  
          "id":12,
@@ -100,14 +100,14 @@
          "taskIds":[  
             13
          ],
-         "name":"calc"
+         "name":"calc_ratio"
       },
       {  
          "id":14,
          "taskIds":[  
             14
          ],
-         "name":"filter"
+         "name":"filter_peaks"
       }
    ],
    "edges":[

@@ -9,7 +9,7 @@
     },
     {
       "id": 1,
-      "taskIds": [1],
+      "taskIds": [1, 4],
       "name": "tfidf"
     },
     {
@@ -70,6 +70,11 @@
           "opSpecification": {
             "algorithm": "tfidf_map"
           }
+        },
+        "engine":{"fs":"postgres"},
+        "schema":{
+          "input": ["field1", "field2"],
+          "output": ["field1", "field2", "field3"]
         }
       }
     },
@@ -86,7 +91,8 @@
           "opSpecification": {
             "algorithm": "kmeans"
           }
-        }
+        },
+        "engine":{"fs":"hdfs"}
       }
     },
     {
@@ -99,6 +105,25 @@
           "engine": {
             "fs": "hdfs"
           }
+        }
+      }
+    },
+    {
+      "id": 4,
+      "nodeId": 1,
+      "name": "data_filter",
+      "operator": {
+        "constraints": {
+          "input": "1",
+          "output": "1",
+          "opSpecification": {
+            "algorithm": "data_filter"
+          }
+        },
+        "engine":{"fs":"postgres"},
+        "schema":{
+          "input": ["field1", "field2"],
+          "output": ["field1", "field2"]
         }
       }
     }

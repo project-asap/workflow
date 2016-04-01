@@ -27,6 +27,11 @@ openWorkflow = (w) ->
     graph.addLink(edge)
   return
 
+findTask = (taskId) ->
+  for task in workflow.tasks
+    if parseInt(task.id) == taskId
+      return task
+
 showTasks = (nodeId) ->
   tgraph.clean()
   for task in workflow.tasks
@@ -60,7 +65,7 @@ selectNode = (id, type) ->
     taskSelected = id
     oldclass = $('#tasksBoard').find('.node'+taskSelected).attr('class')
     $('#tasksBoard').find('.node'+taskSelected).attr('class', oldclass+' selected')
-    task = workflow.tasks[id]
+    task = findTask(id)
     $('#taskTitle').val(task.name)
     $('#metadataEditor').val(JSON.stringify(task.operator, null, 2))
 
@@ -156,10 +161,10 @@ $(document).ready ->
 
   $('#taskTitle').on 'input', ->
     $('#tasksBoard').find('.node'+taskSelected).find('text').text($(this).val())
-    workflow.tasks[taskSelected].name = $(this).val()
+    findTask(taskSelected).name = $(this).val()
 
   $('#metadataEditor').on 'input', ->
-    workflow.tasks[taskSelected].operator = JSON.parse($(this).val())
+    findTask(taskSelected).operator = JSON.parse($(this).val())
 
   $('#adddatastore').click ->
     nodeName = prompt('Please enter datastore name', '')
@@ -541,7 +546,7 @@ $(document).ready ->
 #        commented out until better times
         openWorkflow(newWorkflow)
       error: (jqXHR, textStatus, errorThrown) ->
-        console.log(textStatus)
+        alert(jqXHR)
 
   $('#optimise').click ->
     $.ajax '/php/index.php',
