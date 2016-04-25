@@ -17,6 +17,7 @@
 		"url": "https://github.com/project-asap/workflow/issues",
 		"email": "maxim.filatov@unige.ch"
 	},
+	"license": "Apache-2.0",
 	"engine": "node >= 0.12.2",
 	"devDependencies": {
 		"coffee-script": ">= 1.9.1",
