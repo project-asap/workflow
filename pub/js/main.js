@@ -821,6 +821,7 @@ $(document).ready(function() {
         return openWorkflow(newWorkflow);
       },
       error: function(jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR);
         return alert(jqXHR.responseText);
       }
     });
@@ -845,7 +846,8 @@ $(document).ready(function() {
         return openWorkflow(newWorkflow);
       },
       error: function(jqXHR, textStatus, errorThrown) {
-        return console.log(jqXHR.responseText);
+        console.log(jqXHR);
+        return alert(jqXHR.responseText);
       }
     });
   });
@@ -866,7 +868,8 @@ $(document).ready(function() {
         return console.log(data);
       },
       error: function(jqXHR, textStatus, errorThrown) {
-        return console.log(jqXHR.responseText);
+        console.log(jqXHR);
+        return alert(jqXHR.responseText);
       }
     });
   });
