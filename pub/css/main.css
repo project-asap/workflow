@@ -81,7 +81,7 @@ label {
 
 .node .rect {
     stroke: black;
-    fill: white;
+    fill: #91b2d9;
     stroke-width: 1.5px;
 }
 .node.circle .rect {
@@ -101,7 +101,7 @@ label {
     stroke-width: 1px;
 }
 .node.circle .ellipse {
-    fill: white;
+    fill: #91b2d9;
     stroke-width: 1.5px;
 }
 .node.rect .ellipse {

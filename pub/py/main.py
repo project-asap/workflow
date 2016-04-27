@@ -260,7 +260,7 @@ class Workflow:
             w = open.pop()
             # composing all possible pairs
             for k in LP:
-                edge = self.edges[k]
+                edge = self.findEdge(k)
                 inp = edge['sourceId']
                 out = edge['targetId']
                 wnew = w.compose(inp, out)

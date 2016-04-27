@@ -26,18 +26,20 @@ $date = date('Y-m-d_H:i', time());
 $name = $_POST['workflow']['name'];
 $fname = $WLibrary.$name.'_'.$date;
 
-if (file_exists($WLibrary.$name.'_o.json')) {
-    $filename = $WLibrary.$name.'_o.json';
-    $file = fopen($filename, 'r');
-    $content = fread($file, filesize($filename));
-    fclose($file);
-    die($content);
-}
-
 $file = fopen($fname, 'w') or die("can't open file: ".$fname);
 fwrite($file, json_encode($_POST['workflow']));
 fclose($file);
+
 if ($_POST['action'] == 'analyse') {
+
+    if (file_exists($WLibrary.$name.'_a.json')) {
+        $filename = $WLibrary.$name.'_a.json';
+        $file = fopen($filename, 'r');
+        $content = fread($file, filesize($filename));
+        fclose($file);
+        die($content);
+    }
+
     $output = exec('/usr/local/bin/python ../py/main.py analyse '.$fname);
     if (startsWith($output, 'ERROR:')) {
         http_response_code(500);
@@ -50,6 +52,15 @@ if ($_POST['action'] == 'analyse') {
     die($content);
 }
 elseif ($_POST['action'] == 'optimise') {
+
+    if (file_exists($WLibrary.$name.'_o.json')) {
+        $filename = $WLibrary.$name.'_o.json';
+        $file = fopen($filename, 'r');
+        $content = fread($file, filesize($filename));
+        fclose($file);
+        die($content);
+    }
+
     $output = exec('/usr/local/bin/python ../py/main.py optimise '.$fname);
     if (startsWith($output, 'ERROR:')) {
         http_response_code(500);

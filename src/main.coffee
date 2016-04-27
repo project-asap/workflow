@@ -546,7 +546,8 @@ $(document).ready ->
 #        commented out until better times
         openWorkflow(newWorkflow)
       error: (jqXHR, textStatus, errorThrown) ->
-        alert(jqXHR)
+        console.log(jqXHR)
+        alert(jqXHR.responseText)
 
   $('#optimise').click ->
     $.ajax '/php/index.php',
@@ -565,7 +566,8 @@ $(document).ready ->
         newWorkflow.taskLinks = newWorkflow.taskLinks || []
         openWorkflow(newWorkflow)
       error: (jqXHR, textStatus, errorThrown) ->
-        console.log(textStatus)
+        console.log(jqXHR)
+        alert(jqXHR.responseText)
 
   $('#execute').click ->
     $.ajax '/php/index.php',
@@ -581,7 +583,8 @@ $(document).ready ->
       success: (data, textStatus, jqXHR) ->
         console.log(data)
       error: (jqXHR, textStatus, errorThrown) ->
-        console.log(textStatus)
+        console.log(jqXHR)
+        alert(jqXHR.responseText)
 
   $('#dashboard').click ->
     $.ajax '/php/index.php',

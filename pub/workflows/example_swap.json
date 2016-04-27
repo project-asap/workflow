@@ -17,20 +17,14 @@
       "name": "calc",
       "taskIds":[  
         1
-      ],
-      "x": 300,
-      "y": 200,
-      "fixed": true
+      ]
     },
     {
       "id": 2,
       "name": "filter",
       "taskIds":[  
         2
-      ],
-      "x": 400,
-      "y": 200,
-      "fixed": true
+      ]
     },
     {
       "id": 3,
@@ -39,7 +33,7 @@
         3
       ],
       "class": "circle",
-      "x": 500,
+      "x": 600,
       "y": 200,
       "fixed": true
     }
@@ -71,12 +65,13 @@
       "nodeId": 0,
       "type": "dataset",
       "operator": {
-        "Constraints":{  
-           "Engine":{  
-              "SQL":"PostgreSQL",
-              "location":"hdp1.itc.unipi.it"
-           },
-           "type":"SQL"
+        "Constraints":{
+          "Engine":{
+            "fs": "psql",
+            "SQL":"PostgreSQL",
+            "location":"hdp1.itc.unipi.it"
+          },
+          "type":"SQL"
         },
         "Optimization":{"size":"4.50E08"},
         "Execution":{  
@@ -107,9 +102,15 @@
               "number":4
            },
            "Argument0":"In0.path",
-           "Argument1":"extract(doy from TS) AS DOY",
-           "Argument2":"DOY",
+           "Argument1":"a+b AS c",
+           "Argument2":"calced",
            "Argument3":"dbname"
+        },
+        "schema": {
+          "input": ["a", "b"],
+          "output": ["a", "b", "c"],
+          "generated": ["c"],
+          "functionality": ["a", "b"]
         }
       }
     },
@@ -135,9 +136,14 @@
               "number":4
            },
            "Argument0":"In0.path",
-           "Argument1":"(TS >= '2015-01-31')",
+           "Argument1":"a > 1",
            "Argument2":"filtered",
            "Argument3":"dbname"
+        },
+        "schema": {
+          "input": ["a", "b", "c"],
+          "output": ["a", "b", "c"],
+          "functionality": ["a"]
         }
       }
     },
@@ -148,12 +154,13 @@
       "nodeId": 3,
       "type": "dataset",
       "operator": {
-        "Constraints":{  
-           "Engine":{  
-              "SQL":"PostgreSQL",
-              "location":"hdp1.itc.unipi.it"
-           },
-           "type":"SQL"
+        "Constraints":{
+          "Engine":{
+            "fs": "psql",
+            "SQL":"PostgreSQL",
+            "location":"hdp1.itc.unipi.it"
+          },
+          "type":"SQL"
         },
         "Optimization":{"size":"4.50E08"},
         "Execution":{

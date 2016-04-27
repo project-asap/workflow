@@ -1,0 +1,298 @@
+{
+  "name": "example_split_a",
+  "nodes": [
+    {
+      "id": 0,
+      "taskIds": [0],
+      "name": "d1",
+      "class": "circle",
+      "x": 200,
+      "y": 200,
+      "fixed": true
+    },
+    {
+      "id": 1,
+      "taskIds": [1],
+      "name": "d2",
+      "class": "circle",
+      "x": 200,
+      "y": 400,
+      "fixed": true
+    },
+    {
+      "id": 2,
+      "taskIds": [2],
+      "name": "result",
+      "class": "circle",
+      "x": 800,
+      "y": 300,
+      "fixed": true
+    },
+    {
+      "id": 3,
+      "taskIds": [3],
+      "name": "select"
+    },
+    {
+      "id": 4,
+      "taskIds": [4],
+      "name": "join"
+    },
+    {
+      "id": 5,
+      "taskIds": [5],
+      "name": "sort"
+    },
+    {
+      "id": 6,
+      "taskIds": [6],
+      "name": "project"
+    },
+    {
+      "id": 7,
+      "taskIds": [7],
+      "name": "move_hdfs2psql"
+    }
+  ],
+  "edges": [
+    {
+      "id": 0,
+      "sourceId": 0,
+      "targetId": 7,
+      "class": "dashed"
+    },
+    {
+      "id": 1,
+      "sourceId": 1,
+      "targetId": 6,
+      "class": "dashed"
+    },
+    {
+      "id": 2,
+      "sourceId": 5,
+      "targetId": 2,
+      "class": "dashed"
+    },
+    {
+      "id": 3,
+      "sourceId": 7,
+      "targetId": 3
+    },
+    {
+      "id": 4,
+      "sourceId": 3,
+      "targetId": 4
+    },
+    {
+      "id": 5,
+      "sourceId": 6,
+      "targetId": 4
+    },
+    {
+      "id": 6,
+      "sourceId": 4,
+      "targetId": 5
+    }
+  ],
+  "tasks": [
+    {
+      "id": 0,
+      "nodeId": 0,
+      "name": "d1",
+      "type": "dataset",
+      "class": "circle",
+      "operator": {
+        "constraints": {},
+        "engine": {
+          "fs": "hdfs"
+        },
+        "schema": ["a1", "a2"]
+      }
+    },
+    {
+      "id": 1,
+      "nodeId": 1,
+      "name": "d2",
+      "type": "dataset",
+      "class": "circle",
+      "operator": {
+        "constraints": {},
+        "engine": {
+          "fs": "psql",
+          "location":"hdp1.itc.unipi.it"
+        },
+        "schema": ["b1", "b2", "b3"]
+      }
+    },
+    {
+      "id": 2,
+      "nodeId": 2,
+      "name": "result",
+      "type": "dataset",
+      "class": "circle",
+      "operator": {
+        "constraints": {},
+        "engine": {
+          "fs": "psql",
+          "location":"hdp1.itc.unipi.it"
+        },
+        "schema": ["a1", "a2", "b2"]
+      }
+    },
+    {
+      "id": 3,
+      "nodeId": 3,
+      "name": "select",
+      "class": "circle",
+      "operator": {
+        "constraints": {
+          "input": "1",
+          "output": "1",
+          "opSpecification": {
+            "algorithm": "filter"
+          }
+        },
+        "engine":{
+          "fs":"psql",
+          "location":"hdp1.itc.unipi.it"
+        },
+        "schema":{
+          "input": ["a1", "a2"],
+          "output": ["a1", "a2"]
+        },
+        "execution":{
+          "arguments":{
+            "number":4
+          },
+          "argument0":"In0",
+          "argument1":"a1 < val",
+          "argument2":"Out0",
+          "argument3":"dbname"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "nodeId": 4,
+      "name": "join",
+      "class": "circle",
+      "operator": {
+        "constraints": {
+          "input": "2",
+          "output": "1",
+          "opSpecification": {
+            "algorithm": "join"
+          }
+        },
+        "engine":{
+          "fs":"psql",
+          "location":"hdp1.itc.unipi.it"
+        },
+        "schema":{
+          "input1": ["a1", "a2"],
+          "input2": ["b1", "b2"],
+          "output": ["a1", "a2", "b2"]
+        },
+        "execution":{
+          "arguments":{
+            "number":5
+          },
+          "argument0":"In0",
+          "argument1":"In1",
+          "argument2":"In0.a1 = In1.b1",
+          "argument3":"Out0",
+          "argument4":"dbname"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "nodeId": 5,
+      "name": "sort",
+      "class": "circle",
+      "operator": {
+        "constraints": {
+          "input": "1",
+          "output": "1",
+          "opSpecification": {
+            "algorithm": "groupBy_sort"
+          }
+        },
+        "engine": {
+          "fs": "psql",
+          "location": "hdp1.itc.unipi.it"
+        },
+        "schema": {
+          "input": ["a1", "a2", "b2"],
+          "output": ["a1", "a2", "b2"]
+        },
+        "execution": {
+          "arguments": {
+            "number": 5
+          },
+          "argument0": "In0",
+          "argument1": "a2 DESC",
+          "argument2": "",
+          "argument3": "Out0",
+          "argument4": "dbname"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "nodeId": 6,
+      "name": "project",
+      "class": "circle",
+      "operator": {
+        "constraints": {
+          "input": "1",
+          "output": "1",
+          "opSpecification": {
+            "algorithm": "projection"
+          }
+        },
+        "engine": {
+          "fs": "psql",
+          "location": "hdp1.itc.unipi.it"
+        },
+        "schema": {
+          "input": ["b1", "b2", "b3"],
+          "output": ["b1", "b2"]
+        },
+        "execution": {
+          "arguments": {
+            "number": 4
+          },
+          "argument0": "In0",
+          "argument1": "b3",
+          "argument2": "Out0",
+          "argument3": "dbname"
+        }
+      }
+    },
+    {
+      "id": 7,
+      "nodeId": 7,
+      "name": "move_hdfs_postgres",
+      "class": "circle",
+      "operator": {
+        "constraints": {
+          "input": "1",
+          "output": "1",
+          "opSpecification": {
+            "algorithm": "move_hdfs_postgres"
+          }
+        },
+        "engine": {
+          "location": "hdp1.itc.unipi.it"
+        },
+        "schema": {
+          "input": ["a1", "a2"],
+          "output": ["a1", "a2"]
+        }
+      }
+    }
+  ],
+  "taskLinks": []
+}
+

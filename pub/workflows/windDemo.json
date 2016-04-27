@@ -7,7 +7,10 @@
             0
          ],
          "name":"cdr_w_a",
-         "class":"circle"
+         "class":"circle",
+         "x": 500,
+         "y": 50,
+         "fixed": true
       },
       {  
          "id":1,
@@ -22,8 +25,11 @@
          "taskIds":[  
             2
          ],
-         "name":"d1",
-         "class":"circle"
+         "name":"result",
+         "class":"circle",
+         "x": 500,
+         "y": 650,
+         "fixed": true
       },
       {  
          "id":3,
@@ -58,14 +64,14 @@
          "taskIds":[  
             7
          ],
-         "name":"join"
+         "name":"LO_join"
       },
       {  
          "id":8,
          "taskIds":[  
             8
          ],
-         "name":"join"
+         "name":"LO_join"
       },
       {  
          "id":9,
@@ -107,21 +113,30 @@
          "taskIds":[  
             14
          ],
-         "name":"join"
+         "name":"join4",
+         "x": 500,
+         "y": 440,
+         "fixed": true
       },
       {  
          "id":15,
          "taskIds":[  
             15
          ],
-         "name":"calc_ratio"
+         "name":"calc_ratio",
+         "x": 500,
+         "y": 510,
+         "fixed": true
       },
       {  
          "id":16,
          "taskIds":[  
             16
          ],
-         "name":"filter_peaks"
+         "name":"filter_peaks",
+         "x": 500,
+         "y": 580,
+         "fixed": true
       }
    ],
    "edges":[  
@@ -236,6 +251,7 @@
          "nodeId":0,
          "name":"cdr_w_a",
          "type":"dataset",
+         "class":"circle",
          "operator":{  
             "Constraints":{  
                "Engine":{  
@@ -256,6 +272,7 @@
          "nodeId":1,
          "name":"voronoi",
          "type":"dataset",
+         "class":"circle",
          "operator":{  
             "Constraints":{  
                "Engine":{  
@@ -274,8 +291,9 @@
       {  
          "id":2,
          "nodeId":2,
-         "name":"d1",
+         "name":"result",
          "type":"dataset",
+         "class":"circle",
          "operator":{  
             "Constraints":{  
                "Engine":{  
@@ -295,6 +313,7 @@
          "id":3,
          "nodeId":3,
          "name":"Calc_extractTS",
+         "class":"circle",
          "operator":{  
             "Constraints":{
                "opSpecification":{
@@ -322,6 +341,7 @@
          "id":4,
          "nodeId":4,
          "name":"Calc_NUM",
+         "class":"circle",
          "operator":{  
             "Constraints":{  
                "opSpecification":{  
@@ -349,6 +369,7 @@
          "id":5,
          "nodeId":5,
          "name":"Filter_test_data",
+         "class":"circle",
          "operator":{  
             "Constraints":{  
                "opSpecification":{  
@@ -376,6 +397,7 @@
          "id":6,
          "nodeId":6,
          "name":"Filter_training_data",
+         "class":"circle",
          "operator":{  
             "Constraints":{  
                "opSpecification":{  
@@ -402,12 +424,13 @@
       {  
          "id":7,
          "nodeId":7,
-         "name":"Join_test_VORONOI",
+         "name":"LO_join",
+         "class":"circle",
          "operator":{  
             "Constraints":{  
                "opSpecification":{  
                   "Algorithm":{  
-                     "name":"Join_SQL_query"
+                     "name":"LO_Join_SQL_query"
                   }
                },
                "Input":{"number":2},
@@ -431,7 +454,8 @@
       {  
          "id":8,
          "nodeId":8,
-         "name":"Join_training_VORONOI",
+         "name":"LO_Join",
+         "class":"circle",
          "operator":{  
             "Constraints":{  
                "opSpecification":{  
@@ -460,7 +484,8 @@
       {  
          "id":9,
          "nodeId":9,
-         "name":"Filter_test_rIDnull",
+         "name":"Filter_region",
+         "class":"circle",
          "operator":{  
             "Constraints":{  
                "opSpecification":{  
@@ -487,7 +512,8 @@
       {  
          "id":10,
          "nodeId":10,
-         "name":"Filter_training_rIDnull",
+         "name":"Filter_region",
+         "class":"circle",
          "operator":{  
             "Constraints":{  
                "opSpecification":{  
@@ -515,6 +541,7 @@
          "id":11,
          "nodeId":11,
          "name":"Calc_test_sumNUM",
+         "class":"circle",
          "operator":{  
             "Constraints":{  
                "opSpecification":{  
@@ -542,6 +569,7 @@
          "id":12,
          "nodeId":12,
          "name":"Calc_training_avgNUM",
+         "class":"circle",
          "operator":{  
             "Constraints":{  
                "opSpecification":{  
@@ -569,6 +597,7 @@
          "id":13,
          "nodeId":13,
          "name":"Calc_cpbase_sumNUM",
+         "class":"circle",
          "operator":{  
             "Constraints":{  
                "opSpecification":{  
@@ -595,7 +624,8 @@
       {  
          "id":14,
          "nodeId":14,
-         "name":"big_MultiJoin",
+         "name":"join4",
+         "class":"circle",
          "operator":{  
             "Constraints":{  
                "opSpecification":{  
@@ -627,6 +657,7 @@
          "id":15,
          "nodeId":15,
          "name":"Calc_ratio",
+         "class":"circle",
          "operator":{  
             "Constraints":{  
                "opSpecification":{  
@@ -654,6 +685,7 @@
          "id":16,
          "nodeId":16,
          "name":"Filter_ratio",
+         "class":"circle",
          "operator":{  
             "Constraints":{  
                "opSpecification":{  

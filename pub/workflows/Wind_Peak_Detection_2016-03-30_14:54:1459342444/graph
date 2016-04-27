@@ -9,3 +9,14 @@ Wind_Peak_Detection,d4
 d4,Wind_Peak_Detection_Publisher
 Wind_Peak_Detection_Publisher,target
 target,$$target
+
+d1,Wind_Distribution_Computation,0
+Wind_Distribution_Computation,d2,0
+d3,Wind_Peak_Detection_Publisher,0
+Wind_Peak_Detection_Publisher,d4,0
+cdr_data,Wind_Data_Filter,0
+Wind_Data_Filter,d1,0
+d1,Wind_Peak_Detection,0
+d2,Wind_Peak_Detection,1
+Wind_Peak_Detection,d3,0
+d4,$$target

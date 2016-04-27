@@ -5,7 +5,7 @@
       "name": "nodes",
       "children": [
         {
-          "name": "id: NUMBER"
+          "name": "id: STRING"
         },
         {
           "name": "taskIds: ARRAY"
@@ -16,10 +16,10 @@
       "name": "edges",
       "children": [
         {
-          "name": "sourceId: NUMBER"
+          "name": "sourceId: STRING"
         },
         {
-          "name": "targetId: NUMBER"
+          "name": "targetId: STRING"
         }
       ]
     },
@@ -27,10 +27,10 @@
       "name": "tasks",
       "children": [
         {
-          "name": "id: NUMBER"
+          "name": "id: STRING"
         },
         {
-          "name": "nodeId: NUMBER"
+          "name": "nodeId: STRING"
         },
         {
           "name": "operator",
@@ -42,7 +42,7 @@
                   "name": "input",
                   "children": [
                     {
-                      "name": "number: NUMBER"
+                      "name": "number: INTEGER"
                     }
                   ]
                 },
@@ -58,7 +58,7 @@
                   "name": "output",
                   "children": [
                     {
-                      "name": "number: NUMBER"
+                      "name": "number: INTEGER"
                     }
                   ]
                 },
@@ -93,10 +93,10 @@
       "name": "taskLinks",
       "children": [
         {
-          "name": "sourceTaskId: NUMBER"
+          "name": "sourceTaskId: STRING"
         },
         {
-          "name": "targetTaskId: NUMBER"
+          "name": "targetTaskId: STRING"
         }
       ]
     }
