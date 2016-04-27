@@ -186,7 +186,7 @@
       same "printed page" as the copyright notice for easier
       identification within third-party archives.
 
-   Copyright {yyyy} {name of copyright owner}
+   Copyright 2016 ASAP
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -199,3 +199,22 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+
+========================================================================
+MIT licenses
+========================================================================
+
+The following components are provided under the MIT License. See project link for details.
+
+     (MIT License) ruamel.yaml (https://pypi.python.org/pypi/ruamel.yaml)
+     (MIT License) jquery (https://jquery.org/license/)
+     (MIT License) Hjson (https://github.com/laktak/hjson-js/)
+     (MIT License) FileSaver.js (https://github.com/eligrey/FileSaver.js/)
+     (MIT License) Bootstrap (http://getbootstrap.com)
+     
+========================================================================
+BSD-style licenses
+========================================================================
+
+The following components are provided under a BSD-style license. See project link for details.
+     (BSD style) d3.js (https://github.com/mbostock/d3/)
