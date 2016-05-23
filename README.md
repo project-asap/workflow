@@ -31,6 +31,10 @@ The project is configured with a `package.json` and a `Gruntfile.js`, it's very 
 2.  Install project dependencies with `npm install`.
 3.  Run Grunt with `grunt`.
 
+Tests
+-----
+To run tests, do `python -m unittest -v testmain` in the directory `pub/py/`
+
 Usage of a tool
 ---------------
 

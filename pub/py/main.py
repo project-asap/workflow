@@ -16,12 +16,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+
 #!/usr/bin/env python
 import sys, os
 import ruamel.yaml as yaml
 import copy
 import json
 from datetime import datetime
+
 
 class Workflow:
 
@@ -41,13 +43,13 @@ class Workflow:
         self.taskLinks = wl['taskLinks'] if 'taskLinks' in wl else []
 
     def __repr__(self):
-        return {
+        return json.dumps({
             'name': self.name,
             'nodes': self.nodes,
             'edges': self.edges,
             'tasks': self.tasks,
             'taskLinks': self.taskLinks
-        }
+        }, sort_keys=True, indent=2)
 
     def analyse(self):
         for node in self.nodes:
@@ -69,6 +71,7 @@ class Workflow:
             if inp not in nodeJ['predecessors']:
                 nodeJ['predecessors'].append(inp)
         # Checking for cycle (TODO: optimise it)
+
         def retSuccessors(self, nIds):
             sucs = []
             for nId in nIds:
@@ -76,6 +79,7 @@ class Workflow:
                     if suc not in sucs:
                         sucs.append(suc)
             return sucs
+
         for node in self.nodes:
             nId = node['id']
             nIds = [nId]
@@ -85,7 +89,7 @@ class Workflow:
                 if nId in nIds:
                     print 'ERROR: Workflow contains a cycle!'
                     sys.exit(0)
-                iter = iter+1
+                iter += 1
         # Splitting multi-task vertices
         for node in self.nodes:
             if len(node['taskIds']) == 0:
@@ -181,38 +185,38 @@ class Workflow:
 
     def optimise(self):
         moved = -1
-        while (moved != 0):
+        while moved != 0:
             moved = 0
             for edge in self.edges:
                 i = edge['sourceId']
                 j = edge['targetId']
                 ni = self.findNode(i)
                 nj = self.findNode(j)
-                if (self.isNodeUnary(i) and self.isNodeUnary(j) and len(ni['taskIds']) == 1 and len(nj['taskIds']) == 1):
+                if self.isNodeUnary(i) and self.isNodeUnary(j) and len(ni['taskIds']) == 1 and len(nj['taskIds']) == 1:
                     ti = self.findTask(ni['taskIds'][0])
                     tj = self.findTask(nj['taskIds'][0])
-                    if ('operator' in ti and 'constraints' in ti['operator'] or 'name' in ti['operator']['constraints'] and 'filter' in ti['operator']['constraints']['name'] and 'select' in ti['operator']['constraints']['name']):
+                    if 'operator' in ti and 'constraints' in ti['operator'] or 'name' in ti['operator']['constraints'] and 'filter' in ti['operator']['constraints']['name'] and 'select' in ti['operator']['constraints']['name']:
                         continue
                     # heuristic 1
                     # move restrictive operators to the start
-                    elif ('operator' in tj and 'constraints' in tj['operator'] or 'name' in tj['operator']['constraints'] and 'filter' in tj['operator']['constraints']['name'] and 'select' in tj['operator']['constraints']['name']):
+                    elif 'operator' in tj and 'constraints' in tj['operator'] or 'name' in tj['operator']['constraints'] and 'filter' in tj['operator']['constraints']['name'] and 'select' in tj['operator']['constraints']['name']:
                         ni['taskIds'][0] = tj['id']
                         ti['nodeId'] = int(nj['id'])
                         nj['taskIds'][0] = ti['id']
                         tj['nodeId'] = int(ni['id'])
-                        moved = moved + 1
+                        moved += 1
                         # print ti
                         # print tj
-                    elif ('operator' in ti and 'constraints' in ti['operator'] or 'name' in ti['operator']['constraints'] and 'calc' in ti['operator']['constraints']['name']):
+                    elif 'operator' in ti and 'constraints' in ti['operator'] or 'name' in ti['operator']['constraints'] and 'calc' in ti['operator']['constraints']['name']:
                         continue
                     # heuristic 2
                     # place non-blocking operators together and separately from blocking operators
-                    elif ('operator' in tj and 'constraints' in tj['operator'] or 'name' in tj['operator']['constraints'] and 'calc' in tj['operator']['constraints']['name']):
+                    elif 'operator' in tj and 'constraints' in tj['operator'] or 'name' in tj['operator']['constraints'] and 'calc' in tj['operator']['constraints']['name']:
                         ni['taskIds'][0] = tj['id']
                         ti['nodeId'] = int(nj['id'])
                         nj['taskIds'][0] = ti['id']
                         tj['nodeId'] = int(ni['id'])
-                        moved = moved + 1
+                        moved += 1
                         # print tinp
                         # print tout
                     else:
@@ -231,14 +235,14 @@ class Workflow:
 
         HP = self.findHomologousNodes()
 
-        while len(open) <> 0:
+        while len(open) != 0:
             w = open.pop()
             # composing all possible pairs
             for edge in self.edges:
                 inp = edge['sourceId']
                 out = edge['targetId']
                 wnew = w.compose(inp, out)
-                if (wnew not in open and wnew not in close):
+                if wnew not in open and wnew not in close:
                     if wnew.getCost() < wmin.getCost():
                         wmin = wnew.copy()
                     open.append(wnew)
@@ -248,7 +252,7 @@ class Workflow:
                 inp = edge['sourceId']
                 out = edge['targetId']
                 w.swap(inp, out)
-                if (wnew not in open and wnew not in close):
+                if wnew not in open and wnew not in close:
                     if wnew.getCost() < wmin.getCost():
                         wmin = wnew.copy()
                     open.append(wnew)
@@ -258,7 +262,7 @@ class Workflow:
                 inp = pair.first
                 out = pair.second
                 w.factorize(inp, out)
-                if (wnew not in open and wnew not in close):
+                if wnew not in open and wnew not in close:
                     if wnew.getCost() < wmin.getCost():
                         wmin = wnew.copy()
                     open.append(wnew)
@@ -274,7 +278,7 @@ class Workflow:
         HP = self.findHomologousNodes()
         LP = self.findLinearPaths()
 
-        while len(open) <> 0:
+        while len(open) != 0:
             w = open.pop()
             # composing all possible pairs
             for k in LP:
@@ -293,7 +297,7 @@ class Workflow:
                 inp = edge['sourceId']
                 out = edge['targetId']
                 w.swap(inp, out)
-                if (wnew not in open and wnew not in close):
+                if wnew not in open and wnew not in close:
                     if wnew.getCost() < wmin.getCost():
                         wmin = wnew.copy()
                     open.append(wnew)
@@ -308,7 +312,7 @@ class Workflow:
                 suc = list(set(nodeI['successors']) & set(nodeJ['successors']))
                 for b in list(set().union(pred, suc)):
                     w.factorize(b, i, j)
-                    if (wnew not in open and wnew not in close):
+                    if wnew not in open and wnew not in close:
                         if wnew.getCost() < wmin.getCost():
                             wmin = wnew.copy()
                         open.append(wnew)
@@ -322,49 +326,49 @@ class Workflow:
         return
 
     def swap(self, i, j):
-        if (not self.isNodesAdjacent(i, j)):
+        if not self.isNodesAdjacent(i, j):
             print 'ERROR: Swapping of nonadjacent nodes!'
             sys.exit(0)
-        if (self.isNodeBranching(i)):
+        if self.isNodeBranching(i):
             print 'ERROR: Swapping of branching node '+str(i)+'!'
             sys.exit(0)
-        if (self.isNodeBranching(j)):
+        if self.isNodeBranching(j):
             print 'ERROR: Swapping of branching node '+str(j)+'!'
             sys.exit(0)
-        nodeI = self.findNode[i]
-        nodeJ = self.findNode[j]
-        if (j in nodeI['predecessors']):
+        nodeI = self.findNode(i)
+        nodeJ = self.findNode(j)
+        if j in nodeI['predecessors']:
             return self.swap(j, i)
         nodeI['successors'].remove(j)
         nodeI['predecessors'].append(j)
         nodeJ['predecessors'].remove(i)
         nodeJ['successors'].append(i)
         for edge in self.edges:
-            if (edge['targetId'] == i):
+            if edge['targetId'] == i:
                 edge['targetId'] = j
                 nodeI['predecessors'].remove(edge['sourceId'])
                 nodeJ['predecessors'].append(edge['sourceId'])
-            if (edge['sourceId'] == j):
+            if edge['sourceId'] == j:
                 edge['sourceId'] = i
                 nodeJ['successors'].remove(edge['targetId'])
                 nodeI['successors'].append(edge['targetId'])
         return self
 
     def distribute(self, b, i):
-        if (not self.isNodesAdjacent(b, i)):
+        if not self.isNodesAdjacent(b, i):
             print 'ERROR: Distributing of nonadjacent nodes!'
             sys.exit(0)
         # if (self.isNodeBranching(i)):
         #     print 'ERROR: Distributing of branching node '+str(i)+'!'
         #     sys.exit(0)
-        if (self.isNodeUnary(b)):
+        if self.isNodeUnary(b):
             print 'ERROR: Distributing over unary node '+str(b)+'!'
             sys.exit(0)
         nodeB = self.findNode(b)
-        if (i in nodeB['predecessors'] and len(nodeB['successors']) <> 2):
+        if i in nodeB['predecessors'] and len(nodeB['successors']) != 2:
             print 'ERROR: Distributing supported only into two parallel branches (you have '+str(len(nodeB['successors']))+' branches)!'
             sys.exit(0)
-        if (i in nodeB['successors'] and len(nodeB['predecessors']) <> 2):
+        if i in nodeB['successors'] and len(nodeB['predecessors']) != 2:
             print 'ERROR: Distributing supported only into two parallel branches (you have '+str(len(nodeB['predecessors']))+' branches)!'
             sys.exit(0)
 
@@ -387,19 +391,19 @@ class Workflow:
             self.tasks.append(cTask)
             nodeJ['taskIds'].append(cTask['id'])
         branches = []
-        if (i in nodeB['predecessors']):
+        if i in nodeB['predecessors']:
             for eid, edge in self.edges:
-                if (edge['sourceId'] == i and edge['targetId'] == b):
+                if edge['sourceId'] == i and edge['targetId'] == b:
                     self.edges.pop(eid)
                     nodeI['successors'].remove(b)
                     nodeB['predecessors'].remove(i)
-                elif (edge['targetId'] == i):
+                elif edge['targetId'] == i:
                     edge['targetId'] = b
                     nodeI['predecessors'].remove(edge['sourceId'])
                     nodeB['predecessors'].append(edge['sourceId'])
-                elif (edge['sourceId'] == b):
+                elif edge['sourceId'] == b:
                     branches.append(edge['id'])
-            if (len(branches) <> 2):
+            if len(branches) != 2:
                 print 'ERROR: Distributing supported only into two parallel branches (you have '+str(len(branches))+' branches)!'
                 sys.exit(0)
             for k in range(2):
@@ -412,19 +416,19 @@ class Workflow:
                 })
                 edge['targetId'] = id
                 self.findNode(id)['predecessors'].append(edge['sourceId'])
-        elif (i in nodeB['successors']):
+        elif i in nodeB['successors']:
             for eid, edge in self.edges:
-                if (edge['sourceId'] == b and edge['targetId'] == i):
+                if edge['sourceId'] == b and edge['targetId'] == i:
                     self.edges.pop(eid)
                     nodeB['successors'].remove(i)
                     nodeI['predecessors'].remove(b)
-                elif (edge['sourceId'] == i):
+                elif edge['sourceId'] == i:
                     edge['sourceId'] = b
                     nodeI['successors'].remove(edge['targetId'])
                     nodeB['successors'].append(edge['targetId'])
-                elif (edge['targetId'] == b):
+                elif edge['targetId'] == b:
                     branches.append(edge['id'])
-            if (len(branches) <> 2):
+            if len(branches) != 2:
                 print 'ERROR: Distributing supported only into two parallel branches (you have '+str(len(branches))+' branches)!'
                 sys.exit(0)
             for k in range(2):
@@ -443,16 +447,16 @@ class Workflow:
         return self
 
     def factorize(self, b, i, j):
-        if (not self.isNodesAdjacent(b, i) or not self.isNodesAdjacent(b, j)):
+        if not self.isNodesAdjacent(b, i) or not self.isNodesAdjacent(b, j):
             print 'ERROR: Factorizing of nonadjacent nodes!'
             sys.exit(0)
-        if (not self.isNodesHomologous(i, j)):
+        if not self.isNodesHomologous(i, j):
             print 'ERROR: Factorizing of non homologous nodes!'
             sys.exit(0)
-        if (self.isNodeUnary(b)):
+        if self.isNodeUnary(b):
             print 'ERROR: Factorizing over unary node '+str(b)+'!'
             sys.exit(0)
-        if (i.endswith(('.1', '.2')) and j.endswith(('.1', '.2'))):
+        if i.endswith(('.1', '.2')) and j.endswith(('.1', '.2')):
             id = i[:-2]
         else:
             id = str(i)+'+'+str(j)
@@ -470,8 +474,8 @@ class Workflow:
                 self.nodes.pop(nid)
                 break
         ei = 0
-        if (i in nodeB['successors'] and j in nodeB['successors']):
-            if (len(nodeB['predecessors']) <> 1):
+        if i in nodeB['successors'] and j in nodeB['successors']:
+            if len(nodeB['predecessors']) != 1:
                 print 'ERROR: Unexpected conditions!'
                 sys.exit(0)
             for eid, edge in self.edges:
@@ -502,8 +506,8 @@ class Workflow:
             })
             nodeB['predecessors'].append(id)
             nodeId['successors'].append(b)
-        elif (i in nodeB['predecessors'] and j in nodeB['predecessors']):
-            if (len(nodeB['successors']) <> 1):
+        elif i in nodeB['predecessors'] and j in nodeB['predecessors']:
+            if len(nodeB['successors']) != 1:
                 print 'ERROR: Unexpected conditions!'
                 sys.exit(0)
             for eid, edge in self.edges:
@@ -541,18 +545,18 @@ class Workflow:
         return self
 
     def compose(self, i, j):
-        if (not self.isNodesAdjacent(i, j)):
+        if not self.isNodesAdjacent(i, j):
             print 'ERROR: Composing of nonadjacent nodes!'
             sys.exit(0)
-        if (self.isNodeBranching(i)):
+        if self.isNodeBranching(i):
             print 'ERROR: Composing of branching node '+str(i)+'!'
             sys.exit(0)
-        if (self.isNodeBranching(j)):
+        if self.isNodeBranching(j):
             print 'ERROR: Composing of branching node '+str(j)+'!'
             sys.exit(0)
         nodeI = self.findNode(i)
         nodeJ = self.findNode(j)
-        if (j in nodeI['predecessors']):
+        if j in nodeI['predecessors']:
             return self.compose(j, i)
         nodeI['taskIds'].extend(nodeJ['taskIds'])
         id = str(nodeI['id'])+'+'+str(nodeJ['id'])
@@ -560,20 +564,20 @@ class Workflow:
         for tid in nodeI['taskIds']:
             self.findTask(tid)['nodeId'] = id
         for eid, edge in self.edges:
-            if (edge['sourceId'] == i and edge['targetId'] == j):
+            if edge['sourceId'] == i and edge['targetId'] == j:
                 self.edges.pop(eid)
                 nodeI['successors'].remove(j)
                 nodeJ['predecessors'].remove(i)
-            elif (edge['targetId'] == i):
+            elif edge['targetId'] == i:
                 edge['targetId'] = id
                 self.findNode(edge['sourceId'])['successors'].remove(i).append(id)
-            elif (edge['sourceId'] == j):
+            elif edge['sourceId'] == j:
                 edge['sourceId'] = id
                 self.findNode(edge['targetId'])['predecessors'].remove(j).append(id)
-            elif (edge['sourceId'] == i):
+            elif edge['sourceId'] == i:
                 edge['sourceId'] = id
                 self.findNode(edge['targetId'])['predecessors'].remove(i).append(id)
-            elif (edge['targetId'] == j):
+            elif edge['targetId'] == j:
                 edge['targetId'] = id
                 self.findNode(edge['sourceId'])['successors'].remove(j).append(id)
         for nid, node in self.nodes:
@@ -583,10 +587,10 @@ class Workflow:
         return self
 
     def decompose(self, i):
-        if (self.isNodeBranching(i)):
+        if self.isNodeBranching(i):
             print 'ERROR: Decomposing of branching node '+str(i)+'!'
             sys.exit(0)
-        if ('+' not in str(i)):
+        if '+' not in str(i):
             print 'ERROR: Decomposing supported only for previously composed of factorized nodes!'
             sys.exit(0)
         id = str(i)
@@ -631,26 +635,26 @@ class Workflow:
         return len(node['successors'])
 
     def isNodeUnary(self, i):
-        return (self.indeg(i) <= 1 and self.outdeg(i) <= 1)
+        return self.indeg(i) <= 1 and self.outdeg(i) <= 1
 
     def isNodeBranching(self, i):
         return not self.isNodeUnary(i)
 
     def isNodesAdjacent(self, i, j):
         nodeI = self.findNode(i)
-        return (j in nodeI['successors'] or j in nodeI['predecessors'])
+        return j in nodeI['successors'] or j in nodeI['predecessors']
 
     def isNodesHomologous(self, i, j):
         nodeI = self.findNode(i)
         nodeJ = self.findNode(j)
-        if len(nodeI['taskIds']) <> len(nodeJ['taskIds']):
+        if len(nodeI['taskIds']) != len(nodeJ['taskIds']):
             return False
         else:
             nt = len(nodeI['taskIds'])
         for k in range(0, nt):
             p = nodeI['taskIds'][k]
             q = nodeJ['taskIds'][k]
-            if (cmp(self.findTask(p)['operator'], self.findTask(q)['operator']) <> 0):
+            if cmp(self.findTask(p)['operator'], self.findTask(q)['operator']) != 0:
                 return False
         return True
 
@@ -660,7 +664,7 @@ class Workflow:
             for nodeJ in self.nodes:
                 i = nodeI['id']
                 j = nodeJ['id']
-                if (i <= j):
+                if i <= j:
                     continue
                 if self.isNodesHomologous(i, j):
                     HP.append((i, j))
@@ -671,7 +675,7 @@ class Workflow:
         for edge in self.edges:
             i = edge['sourceId']
             j = edge['targetId']
-            if (self.isNodeUnary(i) and self.isNodeUnary(j)):
+            if self.isNodeUnary(i) and self.isNodeUnary(j):
                 LP.append(edge['id'])
         return LP
 
@@ -699,14 +703,14 @@ class Workflow:
     def changeNodeId(self, old, new):
         self.findNode(old)['id'] = new
         for edge in self.edges:
-            if (edge['sourceId'] == old):
+            if edge['sourceId'] == old:
                 edge['sourceId'] = new
                 self.findNode(edge['targetId'])['predecessors'].remove(old).append(new)
-            if (edge['targetId'] == old):
+            if edge['targetId'] == old:
                 edge['targetId'] = new
                 self.findNode(edge['sourceId'])['successors'].remove(old).append(new)
         for task in self.tasks:
-            if (task['nodeId'] == old):
+            if task['nodeId'] == old:
                 task['nodeId'] = new
 
     def getCost(self):
@@ -740,7 +744,7 @@ class Workflow:
                 targ = taskO['name']
 
             for task in [taskI, taskO]:
-                if ('type' in task and task['type'] == 'dataset'):
+                if 'type' in task and task['type'] == 'dataset':
                     dir = 'datasets'
                 else:
                     dir = 'operators'
@@ -751,12 +755,12 @@ class Workflow:
                     file = open(os.path.join(self.WLibrary, fname, dir, task['name']), 'wb')
                     file.write(constr)
                     file.close()
-            if ('type' in taskI and taskI['type'] == 'dataset'):
+            if 'type' in taskI and taskI['type'] == 'dataset':
                 if len(nodeO['predecessors']) == 1:
                     graph = graph + taskI['name'] + ',' + taskO['name'] + '\n'
                 else:
                     graph = graph + taskI['name'] + ',' + taskO['name'] + ',' + str(nodeO['predecessors'].index(inp)) + '\n'
-            elif ('type' in taskO and taskO['type'] == 'dataset'):
+            elif 'type' in taskO and taskO['type'] == 'dataset':
                 if len(nodeI['successors']) == 1:
                     graph = graph + taskI['name'] + ',' + taskO['name'] + '\n'
                 else:
@@ -782,9 +786,9 @@ class Workflow:
 
         py_dir = os.path.dirname(os.path.realpath(__file__))
         os.chdir(py_dir)
-        os.system('java -cp ASAP_client.jar ExecuteWorkflow '+self.name+' '+fname)
+        os.system('java -cp ~/asap/IRES-Platform/asap-platform/asap-client/target/ASAP_client.jar gr.ntua.cslab.asap.examples.AddWorkflowFromDir localhost '+self.name+' '+fname)
 
-    def save(self, add = None):
+    def save(self, add=None):
         current_time = datetime.now().strftime("%Y-%m-%d_%H:%M")
         fname = self.name + '_' + current_time
         fname = fname+add if add else fname
@@ -802,7 +806,8 @@ class Workflow:
         file.close()
         return os.path.join(self.WLibrary, fname)
 
-def dict2text(indict, pre = None):
+
+def dict2text(indict, pre=None):
     if isinstance(indict, dict):
         for key, value in indict.items():
             if isinstance(value, dict):
@@ -827,16 +832,16 @@ if __name__ == "__main__":
 
     w = Workflow(fname)
 
-    if (action == 'analyse'):
+    if action == 'analyse':
         w.analyse()
         print w.save('-analysed')
-    elif (action == 'optimise'):
+    elif action == 'optimise':
         w.analyse()
         w.optimise()
         # w.hs()
         # w.es()
         print w.save('-optimised')
-    elif (action == 'execute'):
+    elif action == 'execute':
         w.analyse()
         w.execute()
     else:

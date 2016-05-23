@@ -1,0 +1,231 @@
+{
+  "edges": [
+    {
+      "class": "dashed",
+      "id": 0,
+      "sourceId": 0,
+      "targetId": 1
+    },
+    {
+      "id": 1,
+      "sourceId": "101",
+      "targetId": "51"
+    },
+    {
+      "class": "dashed",
+      "id": 2,
+      "sourceId": 2,
+      "targetId": 3
+    },
+    {
+      "id": "101",
+      "sourceId": 1,
+      "targetId": "101"
+    },
+    {
+      "id": "41",
+      "sourceId": "51",
+      "targetId": 2
+    }
+  ],
+  "name": "test_wl",
+  "nodes": [
+    {
+      "class": "circle",
+      "id": 0,
+      "name": "cdr",
+      "predecessors": [],
+      "successors": [
+        1
+      ],
+      "taskIds": [
+        0
+      ]
+    },
+    {
+      "id": 1,
+      "name": "data_filter",
+      "predecessors": [
+        0
+      ],
+      "successors": [
+        "101"
+      ],
+      "taskIds": [
+        4
+      ]
+    },
+    {
+      "id": 2,
+      "name": "kmeans",
+      "predecessors": [
+        1
+      ],
+      "successors": [
+        3
+      ],
+      "taskIds": [
+        2
+      ]
+    },
+    {
+      "class": "circle",
+      "id": 3,
+      "name": "result",
+      "predecessors": [
+        2
+      ],
+      "successors": [],
+      "taskIds": [
+        3
+      ]
+    },
+    {
+      "id": "101",
+      "name": "tfidf",
+      "predecessors": [
+        1
+      ],
+      "successors": [
+        2
+      ],
+      "taskIds": [
+        1
+      ]
+    },
+    {
+      "id": "51",
+      "name": "format_conv",
+      "predecessors": [
+        "101"
+      ],
+      "successors": [
+        2
+      ],
+      "taskIds": [
+        "51"
+      ]
+    }
+  ],
+  "taskLinks": [],
+  "tasks": [
+    {
+      "id": 0,
+      "name": "cdr",
+      "nodeId": 0,
+      "operator": {
+        "constraints": {
+          "engine": {
+            "fs": "hdfs"
+          }
+        }
+      },
+      "type": "dataset"
+    },
+    {
+      "id": 1,
+      "name": "tfidf",
+      "nodeId": "101",
+      "operator": {
+        "constraints": {
+          "input": "1",
+          "input0": "textDirectory",
+          "opSpecification": {
+            "algorithm": "tfidf_map"
+          },
+          "output": "1",
+          "output0": "arffDataset"
+        },
+        "engine": {
+          "fs": "postgres"
+        },
+        "schema": {
+          "input": [
+            "field1",
+            "field2"
+          ],
+          "output": [
+            "field1",
+            "field2",
+            "field3"
+          ]
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "kmeans",
+      "nodeId": 2,
+      "operator": {
+        "constraints": {
+          "input": "1",
+          "input0": "arffDataset",
+          "opSpecification": {
+            "algorithm": "kmeans"
+          },
+          "output": "1",
+          "output0": "textFile"
+        },
+        "engine": {
+          "fs": "hdfs"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "name": "result",
+      "nodeId": 3,
+      "operator": {
+        "constraints": {
+          "engine": {
+            "fs": "hdfs"
+          }
+        }
+      },
+      "type": "dataset"
+    },
+    {
+      "id": 4,
+      "name": "data_filter",
+      "nodeId": 1,
+      "operator": {
+        "constraints": {
+          "input": "1",
+          "opSpecification": {
+            "algorithm": "data_filter"
+          },
+          "output": "1"
+        },
+        "engine": {
+          "fs": "postgres"
+        },
+        "schema": {
+          "input": [
+            "field1",
+            "field2"
+          ],
+          "output": [
+            "field1",
+            "field2"
+          ]
+        }
+      }
+    },
+    {
+      "id": "51",
+      "name": "format_conv",
+      "nodeId": "51",
+      "operator": {
+        "constraints": {
+          "input": 1,
+          "opSpecification": {
+            "algorithm": "convert",
+            "from": "postgres",
+            "to": "hdfs"
+          },
+          "output": 1
+        }
+      }
+    }
+  ]
+}
