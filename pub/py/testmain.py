@@ -26,17 +26,22 @@ import shutil
 
 class TestWorkflow(unittest.TestCase):
 
+    # preparing to test
+    # loading workflow form testwl.json
     def setUp(self):
         self.workflow = main.Workflow('testwl.json')
 
+    # ending the test
     def tearDown(self):
         self.workflow = None
 
+    # testing of analyse function through comparison of its result with the presaved result in a file testwl-a.json
     def test_analyse(self):
         self.workflow.analyse()
         self.workflow_a = main.Workflow('testwl-a.json')
-        self.assertEqual(self.workflow, self.workflow_a)
+        self.assertEqual(self.workflow.__repr__(), self.workflow_a.__repr__())
 
+    # checking that save function generates a file with correct name
     def test_save(self):
         self.workflow.WLibrary = './'
         current_time = datetime.now().strftime("%Y-%m-%d_%H:%M")
@@ -44,23 +49,32 @@ class TestWorkflow(unittest.TestCase):
         self.assertTrue(os.path.isfile(self.workflow.name + '_' + current_time))
         os.remove(self.workflow.name + '_' + current_time)
 
+    # checking that execute function saves a workflow in IReS format (correct folder and presence of required files in it)
+    # TODO: check that yarn task is running
     def test_execute(self):
         self.workflow.analyse()
         self.workflow.WLibrary = './'
         current_time = datetime.now().strftime("%Y-%m-%d_%H:%M:%s")
         self.workflow.execute()
         self.assertTrue(os.path.isdir(self.workflow.name + '_' + current_time))
+        self.assertTrue(os.path.isfile(os.path.join(self.workflow.name + '_' + current_time, 'graph')))
+        self.assertTrue(os.path.isdir(os.path.join(self.workflow.name + '_' + current_time, 'datasets')))
+        self.assertTrue(os.path.isdir(os.path.join(self.workflow.name + '_' + current_time, 'operators')))
         shutil.rmtree(self.workflow.name + '_' + current_time)
 
+    # checking that found node with findNode function has correct id
     def test_findNode(self):
         self.assertEqual(self.workflow.findNode(1)['id'], 1)
 
+    # checking that found task with findTask function has correct id
     def test_findTask(self):
         self.assertEqual(self.workflow.findTask(1)['id'], 1)
 
+    # checking that found edge with findEdge function has correct id
     def test_findEdge(self):
         self.assertEqual(self.workflow.findEdge(1)['id'], 1)
 
+    # testing inner function dict2text through comparison of its result with the presaved result
     def test_dict2text(self):
         sin = {
             "constraints": {

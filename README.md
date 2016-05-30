@@ -34,6 +34,15 @@ The project is configured with a `package.json` and a `Gruntfile.js`, it's very 
 Tests
 -----
 To run tests, do `python -m unittest -v testmain` in the directory `pub/py/`
+Currently, the following functions have test coverage:
+
+1. `analyse()` - comparison of its result with the presaved result in a file testwl-a.json
+2. `save()` - checking that save function generates a file with correct name
+3. `execute()` - checking that execute function saves a workflow in IReS format (correct folder and presence of required files in it)
+4. `findNode()` - checking that found node with findNode function has correct id
+5. `findTask()` - checking that found task with findTask function has correct id
+6. `findEdge()` - checking that found edge with findEdge function has correct id
+7. `dict2text()` - comparison of its result with the presaved result
 
 Usage of a tool
 ---------------
