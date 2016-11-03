@@ -1,4 +1,4 @@
-var addingLink, findTask, graph, loadFile, node1, node2, nodeLink, nodeSelected, openWorkflow, selectNode, showTasks, taskLink, taskSelected, tgraph, workflow;
+var addingLink, findTask, get_tasks, graph, is_operator, loadFile, node1, node2, nodeLink, nodeSelected, openWorkflow, selectNode, showTasks, taskLink, taskSelected, tgraph, workflow;
 
 workflow = null;
 
@@ -167,6 +167,35 @@ selectNode = function(id, type) {
   }
 };
 
+get_tasks = function(node) {
+  var k, len, ref, results, t;
+  ref = workflow.tasks;
+  results = [];
+  for (k = 0, len = ref.length; k < len; k++) {
+    t = ref[k];
+    if (t.nodeId === node.id) {
+      results.push(t);
+    }
+  }
+  return results;
+};
+
+is_operator = function(node) {
+  var t, tasks;
+  tasks = get_tasks(node);
+  if (tasks.lenght <= 0) {
+    return false;
+  } else {
+    t = tasks[0];
+    console.log(t);
+    if ('type' in t && t.type === 'dataset') {
+      return false;
+    } else {
+      return true;
+    }
+  }
+};
+
 $(document).ready(function() {
   $('#newwl').click(function() {
     var nw, wlName;
@@ -199,6 +228,78 @@ $(document).ready(function() {
       type: 'application/json;charset=utf-8'
     });
     return saveAs(blob, workflow.name + '.json');
+  });
+  $('#uploadwl').click(function() {
+    var d, e, n;
+    d = {
+      'name': workflow.name,
+      'operators': (function() {
+        var k, len, ref, results;
+        ref = workflow.nodes;
+        results = [];
+        for (k = 0, len = ref.length; k < len; k++) {
+          n = ref[k];
+          results.push({
+            abstractName: '',
+            cost: '0.0',
+            description: JSON.stringify(get_tasks(n)[0].operator.constraints),
+            description: '',
+            execTime: '0.0',
+            input: (function() {
+              var l, len1, ref1, results1;
+              ref1 = workflow.edges;
+              results1 = [];
+              for (l = 0, len1 = ref1.length; l < len1; l++) {
+                e = ref1[l];
+                if (e.target === n) {
+                  results1.push(e.source.name);
+                }
+              }
+              return results1;
+            })(),
+            isAbstract: false,
+            isOperator: is_operator(n),
+            isTarget: ((function() {
+              var l, len1, ref1, results1;
+              ref1 = workflow.edges;
+              results1 = [];
+              for (l = 0, len1 = ref1.length; l < len1; l++) {
+                e = ref1[l];
+                if (e.source === n) {
+                  results1.push(e);
+                }
+              }
+              return results1;
+            })()).length === 0,
+            name: n.name,
+            output: (function() {
+              var l, len1, ref1, results1;
+              ref1 = workflow.edges;
+              results1 = [];
+              for (l = 0, len1 = ref1.length; l < len1; l++) {
+                e = ref1[l];
+                if (e.source === n) {
+                  results1.push(e.target.name);
+                }
+              }
+              return results1;
+            })(),
+            status: 'stopped'
+          });
+        }
+        return results;
+      })()
+    };
+    console.log(JSON.stringify(d));
+    return $.ajax('http://localhost:1323/abstractWorkflows/add/' + workflow.name, {
+      data: JSON.stringify(d),
+      type: 'POST',
+      contentType: 'application/json; charset=utf-8',
+      error: function(jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR);
+        return alert(jqXHR.responseText);
+      }
+    });
   });
   $('#nodeTitle').on('input', function() {
     var k, len, node, ref, results;

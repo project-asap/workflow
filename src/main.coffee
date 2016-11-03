@@ -85,6 +85,7 @@ selectNode = (id, type) ->
     $('#taskTitle').val(task.name)
     $('#metadataEditor').val(JSON.stringify(task.operator, null, 2))
 
+
 #    $('#metadataTree').removeClass('hide')
 #    flare = task.json
 #    flare.x0 = 0
@@ -142,6 +143,18 @@ selectNode = (id, type) ->
         node1 = null
         node2 = null
 
+get_tasks = (node) ->
+    (t for t in workflow.tasks when t.nodeId == node.id)
+
+is_operator = (node) ->
+    tasks = get_tasks(node)
+    if tasks.lenght <= 0
+        false
+    else
+        t = tasks[0]
+        console.log(t)
+        if 'type' of t and t.type == 'dataset' then false else true
+
 $(document).ready ->
   $('#newwl').click ->
     wlName = prompt('Please enter workflow name', '')
@@ -168,6 +181,33 @@ $(document).ready ->
       'taskLinks': workflow.taskLinks || []
     blob = new Blob([JSON.stringify(sw)], {type: 'application/json;charset=utf-8'})
     saveAs(blob, workflow.name+'.json')
+
+  $('#uploadwl').click ->
+    d =
+        'name': workflow.name
+        'operators':
+            {
+                abstractName: ''
+                cost: '0.0'
+                description: JSON.stringify(get_tasks(n)[0].operator.constraints)
+                description: ''
+                execTime: '0.0'
+                input: e.source.name for e in workflow.edges when e.target == n
+                isAbstract: false
+                isOperator: is_operator(n)
+                isTarget: (e for e in workflow.edges when e.source == n).length == 0
+                name: n.name
+                output: e.target.name for e in workflow.edges when e.source == n
+                status: 'stopped'
+            } for n in workflow.nodes
+    console.log(JSON.stringify(d))
+    $.ajax 'http://localhost:1323/abstractWorkflows/add/' + workflow.name,
+        data: JSON.stringify(d)
+        type: 'POST'
+        contentType: 'application/json; charset=utf-8'
+        error: (jqXHR, textStatus, errorThrown) ->
+            console.log(jqXHR)
+            alert(jqXHR.responseText)
 
   $('#nodeTitle').on 'input', ->
     $('#wlBoard').find('.node'+nodeSelected).find('text').text($(this).val())
