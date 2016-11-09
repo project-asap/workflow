@@ -1,4 +1,4 @@
-var addingLink, findTask, get_tasks, graph, is_operator, loadFile, node1, node2, nodeLink, nodeSelected, openWorkflow, selectNode, showTasks, taskLink, taskSelected, tgraph, workflow;
+var addingLink, findTask, get_description, get_field_values, get_tasks, graph, is_abstract, is_empty, is_operator, loadFile, new_task, node1, node2, nodeLink, nodeSelected, openWorkflow, selectNode, showTasks, taskLink, taskSelected, tgraph, update_name, workflow;
 
 workflow = null;
 
@@ -23,6 +23,7 @@ openWorkflow = function(w) {
   $('#node').addClass('hide');
   $('#taskName').addClass('hide');
   $('#metadata').addClass('hide');
+  $('#libraryDatastores').addClass('hide');
   $('#libraryOperators').addClass('hide');
   $('#addlink').parent('li').removeClass('active');
   $('#addTask').parent('li').removeClass('active');
@@ -85,6 +86,8 @@ loadFile = function() {
 selectNode = function(id, type) {
   var k, len, link, newclass, node, oldclass, ref, task;
   $('#node').removeClass('hide');
+  $('#libraryDatastores').addClass('hide');
+  $('#libraryOperators').addClass('hide');
   if (type === 'task') {
     $('#taskName').removeClass('hide');
     $('#metadata').removeClass('hide');
@@ -182,18 +185,118 @@ get_tasks = function(node) {
 
 is_operator = function(node) {
   var t, tasks;
+  if (node == null) {
+    node = workflow.nodes[nodeSelected];
+  }
   tasks = get_tasks(node);
-  if (tasks.lenght <= 0) {
-    return false;
+  if (tasks.length <= 0) {
+    if ((node["class"] != null) && node["class"] === 'circle') {
+      return false;
+    } else {
+      return true;
+    }
   } else {
     t = tasks[0];
-    console.log(t);
     if ('type' in t && t.type === 'dataset') {
       return false;
     } else {
       return true;
     }
   }
+};
+
+get_field_values = function(node, s) {
+  var k, len, n, ref, results;
+  if (s == null) {
+    s = '';
+  }
+  if ((node.children != null) && node.children.length > 0) {
+    ref = node.children;
+    results = [];
+    for (k = 0, len = ref.length; k < len; k++) {
+      n = ref[k];
+      results.push(get_field_values(n, s + node.name + '.'));
+    }
+    return results;
+  } else {
+    return (s + node.name + '=' + node.value).split('.').slice(1).join('.');
+  }
+};
+
+is_empty = function(o) {
+  return Object.keys(o).length === 0;
+};
+
+get_description = function(node) {
+  var tasks;
+  tasks = get_tasks(node);
+  if (tasks.length <= 0) {
+    return '';
+  } else {
+    if (is_empty(tasks[0].operator)) {
+      return '';
+    } else {
+      return get_field_values(tasks[0].operator).join('\n');
+    }
+  }
+};
+
+is_abstract = function(node) {
+  var tasks;
+  if (is_operator(node)) {
+    return true;
+  } else {
+    tasks = get_tasks(node);
+    if (tasks.length <= 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+};
+
+new_task = function() {
+  var nodeName, task, taskId;
+  nodeName = prompt('Please enter task name', '');
+  update_name(nodeName);
+  taskId = workflow.tasks.length;
+  task = {
+    'id': taskId,
+    'name': nodeName,
+    'nodeId': nodeSelected
+  };
+  if (!is_operator()) {
+    task["class"] = 'circle';
+    task.type = 'dataset';
+    task.operator = {
+      'constraints': {
+        'engine': {
+          'FS': 'HDFS'
+        }
+      },
+      'execution': {
+        'path': ''
+      },
+      'optimization': {
+        'size': ''
+      }
+    };
+  } else {
+    task.operator = {
+      'constraints': {}
+    };
+  }
+  tgraph.addNode(task);
+  return workflow.tasks.push(task);
+};
+
+update_name = function(name, node) {
+  if (node == null) {
+    node = workflow.nodes[nodeSelected];
+  }
+  node.name = name;
+  $('#wlBoard').find('.node' + nodeSelected + ' text').text(name);
+  return $('#nodeTitle').val(name);
 };
 
 $(document).ready(function() {
@@ -242,8 +345,7 @@ $(document).ready(function() {
           results.push({
             abstractName: '',
             cost: '0.0',
-            description: JSON.stringify(get_tasks(n)[0].operator.constraints),
-            description: '',
+            description: get_description(n),
             execTime: '0.0',
             input: (function() {
               var l, len1, ref1, results1;
@@ -257,7 +359,7 @@ $(document).ready(function() {
               }
               return results1;
             })(),
-            isAbstract: false,
+            isAbstract: is_abstract(n),
             isOperator: is_operator(n),
             isTarget: ((function() {
               var l, len1, ref1, results1;
@@ -324,47 +426,22 @@ $(document).ready(function() {
     return findTask(taskSelected).operator = JSON.parse($(this).val());
   });
   $('#adddatastore').click(function() {
-    var node, nodeId, nodeName, task, taskId;
-    nodeName = prompt('Please enter datastore name', '');
+    var node, nodeId;
     nodeId = workflow.nodes.length;
     node = {
       'id': nodeId,
-      'name': nodeName,
+      'name': '',
       'class': 'circle'
     };
     graph.addNode(node);
-    workflow.nodes.push(node);
-    taskId = workflow.tasks.length;
-    task = {
-      'id': taskId,
-      'type': 'dataset',
-      'name': 'dataset',
-      'nodeId': nodeId,
-      'class': 'circle',
-      'operator': {
-        'constraints': {
-          'engine': {
-            'FS': 'HDFS'
-          }
-        },
-        'execution': {
-          'path': 'hdfs:///dataset_simulated/06/1.csv'
-        },
-        'optimization': {
-          'size': '1E9'
-        }
-      }
-    };
-    tgraph.addNode(task);
-    return workflow.tasks.push(task);
+    return workflow.nodes.push(node);
   });
   $('#addnode').click(function() {
-    var node, nodeId, nodeName;
-    nodeName = prompt('Please enter node name', '');
+    var node, nodeId;
     nodeId = workflow.nodes.length;
     node = {
       'id': nodeId,
-      'name': nodeName
+      'name': ''
     };
     graph.addNode(node);
     return workflow.nodes.push(node);
@@ -417,23 +494,43 @@ $(document).ready(function() {
   });
   $('#addTask').click(function() {
     $('#addTask').parent('li').toggleClass('active');
-    return $('#libraryOperators').toggleClass('hide');
+    if (!is_operator()) {
+      return $('#libraryDatastores').toggleClass('hide');
+    } else {
+      return $('#libraryOperators').toggleClass('hide');
+    }
+  });
+  $('#createNewDatastore').click(function() {
+    return new_task();
   });
   $('#createNewTask').click(function() {
-    var nodeName, task, taskId;
-    nodeName = prompt('Please enter task name', '');
-    taskId = workflow.tasks.length;
-    task = {
-      'id': taskId,
-      'name': nodeName,
-      'nodeId': nodeSelected,
-      'class': 'circle',
-      'operator': {
-        'constraints': {}
-      }
-    };
-    tgraph.addNode(task);
-    return workflow.tasks.push(task);
+    return new_task();
+  });
+  $.getJSON('http://localhost:1323/datasets/json', function(json) {
+    var k, len, op;
+    for (k = 0, len = json.length; k < len; k++) {
+      op = json[k];
+      $('#libraryDatastores').append("<li><a href='#op-" + op + "'>" + op + "</a></li>");
+    }
+    $('#libraryDatastores').toggleClass('hide');
+    return $('#libraryDatastores li a[id!=\'createNewDatastore\']').click(function() {
+      $('#addTask').parent('li').removeClass('active');
+      return $.getJSON('http://localhost:1323/datasets/json/' + $(this).text(), function(data) {
+        var task;
+        task = {
+          'id': workflow.tasks.length,
+          'name': data.name,
+          'nodeId': nodeSelected,
+          'class': 'circle',
+          'type': 'dataset',
+          'isAbstract': false,
+          'operator': data
+        };
+        tgraph.addNode(task);
+        workflow.tasks.push(task);
+        return update_name(data.name);
+      });
+    });
   });
   $.getJSON('http://localhost:1323/abstractOperators/json', function(json) {
     var k, len, op;
@@ -442,12 +539,10 @@ $(document).ready(function() {
       $('#libraryOperators').append("<li><a href='#op-" + op + "'>" + op + "</a></li>");
     }
     return $('#libraryOperators li a[id!=\'createNewTask\']').click(function() {
-      console.log($('#libraryOperators li a').length);
       $('#libraryOperators').toggleClass('hide');
       $('#addTask').parent('li').removeClass('active');
       return $.getJSON('http://localhost:1323/abstractOperators/json/' + $(this).text(), function(data) {
         var task;
-        console.log(data);
         task = {
           'id': workflow.tasks.length,
           'name': data.name,
@@ -455,9 +550,9 @@ $(document).ready(function() {
           'class': 'rect',
           'operator': data
         };
-        console.log(task);
         tgraph.addNode(task);
-        return workflow.tasks.push(task);
+        workflow.tasks.push(task);
+        return update_name(data.name);
       });
     });
   });

@@ -32,6 +32,7 @@ openWorkflow = (w) ->
   $('#node').addClass('hide')
   $('#taskName').addClass('hide')
   $('#metadata').addClass('hide')
+  $('#libraryDatastores').addClass('hide')
   $('#libraryOperators').addClass('hide')
   $('#addlink').parent('li').removeClass('active')
   $('#addTask').parent('li').removeClass('active')
@@ -70,6 +71,8 @@ loadFile = ->
 
 selectNode = (id, type) ->
   $('#node').removeClass('hide')
+  $('#libraryDatastores').addClass('hide')
+  $('#libraryOperators').addClass('hide')
   if type == 'task'
     $('#taskName').removeClass('hide')
     $('#metadata').removeClass('hide')
@@ -146,14 +149,65 @@ selectNode = (id, type) ->
 get_tasks = (node) ->
     (t for t in workflow.tasks when t.nodeId == node.id)
 
-is_operator = (node) ->
+is_operator = (node=workflow.nodes[nodeSelected]) ->
     tasks = get_tasks(node)
-    if tasks.lenght <= 0
-        false
+    if tasks.length <= 0
+        if node.class? and  node.class == 'circle' then false else true
     else
         t = tasks[0]
-        console.log(t)
         if 'type' of t and t.type == 'dataset' then false else true
+
+get_field_values = (node, s='') ->
+    if node.children? and node.children.length > 0
+        get_field_values(n, s + node.name + '.') for n in node.children
+    else
+        (s + node.name + '=' + node.value).split('.')[1..].join('.')
+
+
+is_empty = (o) ->
+    Object.keys(o).length == 0
+
+get_description = (node) ->
+    tasks = get_tasks(node)
+    if tasks.length <= 0
+        ''
+    else
+        if is_empty(tasks[0].operator) then '' else get_field_values(tasks[0].operator).join('\n')
+
+is_abstract = (node) ->
+    if is_operator(node)
+        true
+    else
+        tasks = get_tasks(node)
+        if tasks.length <= 0 then true else false
+
+new_task = ->
+    nodeName = prompt('Please enter task name', '')
+    update_name(nodeName)
+    taskId = workflow.tasks.length
+    task =
+      'id': taskId
+      'name': nodeName
+      'nodeId': nodeSelected
+    if not is_operator()
+        task.class = 'circle'
+        task.type = 'dataset'
+        task.operator =
+            'constraints':
+                'engine': 'FS': 'HDFS'
+            'execution': 'path': ''
+            'optimization': 'size': ''
+    else
+      task.operator =
+          'constraints': {}
+    tgraph.addNode(task)
+    workflow.tasks.push task
+
+update_name = (name, node=workflow.nodes[nodeSelected]) ->
+    #tgraph.setNodeName(node, name)
+    node.name = name
+    $('#wlBoard').find('.node'+nodeSelected+' text').text(name)
+    $('#nodeTitle').val(name)
 
 $(document).ready ->
   $('#newwl').click ->
@@ -189,11 +243,10 @@ $(document).ready ->
             {
                 abstractName: ''
                 cost: '0.0'
-                description: JSON.stringify(get_tasks(n)[0].operator.constraints)
-                description: ''
+                description: get_description(n)
                 execTime: '0.0'
                 input: e.source.name for e in workflow.edges when e.target == n
-                isAbstract: false
+                isAbstract: is_abstract(n)
                 isOperator: is_operator(n)
                 isTarget: (e for e in workflow.edges when e.source == n).length == 0
                 name: n.name
@@ -223,36 +276,19 @@ $(document).ready ->
     findTask(taskSelected).operator = JSON.parse($(this).val())
 
   $('#adddatastore').click ->
-    nodeName = prompt('Please enter datastore name', '')
     nodeId = workflow.nodes.length
     node =
       'id': nodeId
-      'name': nodeName
+      'name': ''
       'class': 'circle'
     graph.addNode(node)
     workflow.nodes.push node
-    taskId = workflow.tasks.length
-    task =
-      'id': taskId
-      'type': 'dataset'
-      'name': 'dataset'
-      'nodeId': nodeId
-      'class': 'circle'
-      'operator':
-        'constraints':
-          'engine': 'FS': 'HDFS'
-        'execution': 'path': 'hdfs:///dataset_simulated/06/1.csv'
-        'optimization': 'size': '1E9'
-    tgraph.addNode(task)
-    workflow.tasks.push task
-
 
   $('#addnode').click ->
-    nodeName = prompt('Please enter node name', '')
     nodeId = workflow.nodes.length
     node =
       'id': nodeId
-      'name': nodeName
+      'name': ''
     graph.addNode(node)
     workflow.nodes.push node
 
@@ -296,38 +332,50 @@ $(document).ready ->
 
   $('#addTask').click ->
     $('#addTask').parent('li').toggleClass('active')
-    $('#libraryOperators').toggleClass('hide')
+    if not is_operator()
+        $('#libraryDatastores').toggleClass('hide')
+    else
+        $('#libraryOperators').toggleClass('hide')
+
+  $('#createNewDatastore').click ->
+      new_task()
 
   $('#createNewTask').click ->
-    nodeName = prompt('Please enter task name', '')
-    taskId = workflow.tasks.length
-    task =
-      'id': taskId
-      'name': nodeName
-      'nodeId': nodeSelected
-      'class': 'circle'
-      'operator':
-        'constraints':{}
-    tgraph.addNode(task)
-    workflow.tasks.push task
+      new_task()
+
+  $.getJSON 'http://localhost:1323/datasets/json', (json) ->
+      $('#libraryDatastores').append("<li><a href='#op-#{op}'>#{op}</a></li>") for op in json
+      $('#libraryDatastores').toggleClass('hide')
+      $('#libraryDatastores li a[id!=\'createNewDatastore\']').click ->
+          $('#addTask').parent('li').removeClass('active')
+          $.getJSON 'http://localhost:1323/datasets/json/'+ $(this).text(), (data) ->
+              task =
+                  'id': workflow.tasks.length
+                  'name': data.name
+                  'nodeId': nodeSelected
+                  'class': 'circle'
+                  'type': 'dataset'
+                  'isAbstract': false
+                  'operator': data
+              tgraph.addNode(task)
+              workflow.tasks.push task
+              update_name(data.name)
 
   $.getJSON 'http://localhost:1323/abstractOperators/json', (json) ->
       $('#libraryOperators').append("<li><a href='#op-#{op}'>#{op}</a></li>") for op in json
       $('#libraryOperators li a[id!=\'createNewTask\']').click ->
-          console.log($('#libraryOperators li a').length)
           $('#libraryOperators').toggleClass('hide')
           $('#addTask').parent('li').removeClass('active')
           $.getJSON 'http://localhost:1323/abstractOperators/json/'+ $(this).text(), (data) ->
-              console.log(data)
               task =
                   'id': workflow.tasks.length
                   'name': data.name
                   'nodeId': nodeSelected
                   'class': 'rect'
                   'operator': data
-              console.log(task)
               tgraph.addNode(task)
               workflow.tasks.push task
+              update_name(data.name)
 
   $('#analyse').click ->
     $.ajax '/php/index.php',
