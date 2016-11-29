@@ -25,6 +25,8 @@ node2 = null
 nodeLink = false
 taskLink = false
 
+ires_uri = 'http://localhost:1323'
+
 openWorkflow = (w) ->
   workflow = w
 
@@ -254,7 +256,7 @@ $(document).ready ->
                 status: 'stopped'
             } for n in workflow.nodes
     console.log(JSON.stringify(d))
-    $.ajax 'http://localhost:1323/abstractWorkflows/add/' + workflow.name,
+    $.ajax ires_uri + '/abstractWorkflows/add/' + workflow.name,
         data: JSON.stringify(d)
         type: 'POST'
         contentType: 'application/json; charset=utf-8'
@@ -343,12 +345,12 @@ $(document).ready ->
   $('#createNewTask').click ->
       new_task()
 
-  $.getJSON 'http://localhost:1323/datasets/json', (json) ->
+  $.getJSON ires_uri + '/datasets/json', (json) ->
       $('#libraryDatastores').append("<li><a href='#op-#{op}'>#{op}</a></li>") for op in json
       $('#libraryDatastores').toggleClass('hide')
       $('#libraryDatastores li a[id!=\'createNewDatastore\']').click ->
           $('#addTask').parent('li').removeClass('active')
-          $.getJSON 'http://localhost:1323/datasets/json/'+ $(this).text(), (data) ->
+          $.getJSON ires_uri + '/datasets/json/'+ $(this).text(), (data) ->
               task =
                   'id': workflow.tasks.length
                   'name': data.name
@@ -361,12 +363,12 @@ $(document).ready ->
               workflow.tasks.push task
               update_name(data.name)
 
-  $.getJSON 'http://localhost:1323/abstractOperators/json', (json) ->
+  $.getJSON ires_uri + '/abstractOperators/json', (json) ->
       $('#libraryOperators').append("<li><a href='#op-#{op}'>#{op}</a></li>") for op in json
       $('#libraryOperators li a[id!=\'createNewTask\']').click ->
           $('#libraryOperators').toggleClass('hide')
           $('#addTask').parent('li').removeClass('active')
-          $.getJSON 'http://localhost:1323/abstractOperators/json/'+ $(this).text(), (data) ->
+          $.getJSON ires_uri + '/abstractOperators/json/'+ $(this).text(), (data) ->
               task =
                   'id': workflow.tasks.length
                   'name': data.name

@@ -1,4 +1,4 @@
-var addingLink, findTask, get_description, get_field_values, get_tasks, graph, is_abstract, is_empty, is_operator, loadFile, new_task, node1, node2, nodeLink, nodeSelected, openWorkflow, selectNode, showTasks, taskLink, taskSelected, tgraph, update_name, workflow;
+var addingLink, findTask, get_description, get_field_values, get_tasks, graph, ires_uri, is_abstract, is_empty, is_operator, loadFile, new_task, node1, node2, nodeLink, nodeSelected, openWorkflow, selectNode, showTasks, taskLink, taskSelected, tgraph, update_name, workflow;
 
 workflow = null;
 
@@ -15,6 +15,8 @@ node2 = null;
 nodeLink = false;
 
 taskLink = false;
+
+ires_uri = 'http://localhost:1323';
 
 openWorkflow = function(w) {
   var edge, k, l, len, len1, node, ref, ref1;
@@ -393,7 +395,7 @@ $(document).ready(function() {
       })()
     };
     console.log(JSON.stringify(d));
-    return $.ajax('http://localhost:1323/abstractWorkflows/add/' + workflow.name, {
+    return $.ajax(ires_uri + '/abstractWorkflows/add/' + workflow.name, {
       data: JSON.stringify(d),
       type: 'POST',
       contentType: 'application/json; charset=utf-8',
@@ -506,7 +508,7 @@ $(document).ready(function() {
   $('#createNewTask').click(function() {
     return new_task();
   });
-  $.getJSON('http://localhost:1323/datasets/json', function(json) {
+  $.getJSON(ires_uri + '/datasets/json', function(json) {
     var k, len, op;
     for (k = 0, len = json.length; k < len; k++) {
       op = json[k];
@@ -515,7 +517,7 @@ $(document).ready(function() {
     $('#libraryDatastores').toggleClass('hide');
     return $('#libraryDatastores li a[id!=\'createNewDatastore\']').click(function() {
       $('#addTask').parent('li').removeClass('active');
-      return $.getJSON('http://localhost:1323/datasets/json/' + $(this).text(), function(data) {
+      return $.getJSON(ires_uri + '/datasets/json/' + $(this).text(), function(data) {
         var task;
         task = {
           'id': workflow.tasks.length,
@@ -532,7 +534,7 @@ $(document).ready(function() {
       });
     });
   });
-  $.getJSON('http://localhost:1323/abstractOperators/json', function(json) {
+  $.getJSON(ires_uri + '/abstractOperators/json', function(json) {
     var k, len, op;
     for (k = 0, len = json.length; k < len; k++) {
       op = json[k];
@@ -541,7 +543,7 @@ $(document).ready(function() {
     return $('#libraryOperators li a[id!=\'createNewTask\']').click(function() {
       $('#libraryOperators').toggleClass('hide');
       $('#addTask').parent('li').removeClass('active');
-      return $.getJSON('http://localhost:1323/abstractOperators/json/' + $(this).text(), function(data) {
+      return $.getJSON(ires_uri + '/abstractOperators/json/' + $(this).text(), function(data) {
         var task;
         task = {
           'id': workflow.tasks.length,
