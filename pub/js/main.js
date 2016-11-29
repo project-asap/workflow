@@ -252,7 +252,11 @@ is_abstract = function(node) {
     if (tasks.length <= 0) {
       return true;
     } else {
-      return false;
+      if (is_empty(tasks[0].operator)) {
+        return true;
+      } else {
+        return false;
+      }
     }
   }
 };
@@ -270,19 +274,7 @@ new_task = function() {
   if (!is_operator()) {
     task["class"] = 'circle';
     task.type = 'dataset';
-    task.operator = {
-      'constraints': {
-        'engine': {
-          'FS': 'HDFS'
-        }
-      },
-      'execution': {
-        'path': ''
-      },
-      'optimization': {
-        'size': ''
-      }
-    };
+    task.operator = {};
   } else {
     task.operator = {
       'constraints': {}

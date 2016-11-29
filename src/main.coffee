@@ -181,7 +181,10 @@ is_abstract = (node) ->
         true
     else
         tasks = get_tasks(node)
-        if tasks.length <= 0 then true else false
+        if tasks.length <= 0
+            true
+        else
+            if is_empty(tasks[0].operator) then true else false
 
 new_task = ->
     nodeName = prompt('Please enter task name', '')
@@ -194,11 +197,7 @@ new_task = ->
     if not is_operator()
         task.class = 'circle'
         task.type = 'dataset'
-        task.operator =
-            'constraints':
-                'engine': 'FS': 'HDFS'
-            'execution': 'path': ''
-            'optimization': 'size': ''
+        task.operator = {}
     else
       task.operator =
           'constraints': {}
