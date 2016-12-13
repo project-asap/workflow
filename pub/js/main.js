@@ -852,17 +852,12 @@ $(document).ready(function() {
     });
   });
   $('#execute').click(function() {
-    return $.ajax('/php/index.php', {
-      data: {
-        action: 'execute',
-        workflow: {
-          'name': workflow.name,
-          'nodes': workflow.nodes,
-          'edges': workflow.edges,
-          'tasks': workflow.tasks,
-          'taskLinks': workflow.taskLinks || []
-        }
-      },
+    // TODO: increment list of abstract workflows
+    id = 100;
+    // TODO: use config params of IRES server
+    // TODO: check workflow format
+    $.ajax('http://localhost:1323/abstractWorkflows/add/'+id+'/', {
+      workflow: workflow,
       type: 'POST',
       success: function(data, textStatus, jqXHR) {
         return console.log(data);
@@ -872,6 +867,50 @@ $(document).ready(function() {
         return alert(jqXHR.responseText);
       }
     });
+
+    $.ajax('http://localhost:1323/abstractWorkflows/materialize/'+id+'/', {
+      type: 'GET',
+      success: function(data, textStatus, jqXHR) {
+        return console.log(data);
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR);
+        return alert(jqXHR.responseText);
+      }
+    });
+
+    $.ajax('http://localhost:1323/abstractWorkflows/execute/'+id, {
+      type: 'GET',
+      success: function(data, textStatus, jqXHR) {
+        return console.log(data);
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR);
+        return alert(jqXHR.responseText);
+      }
+    });
+    
+    // TODO: turn on single workflow optimization
+    //return $.ajax('/php/index.php', {
+    //  data: {
+    //    action: 'execute',
+    //    workflow: {
+    //      'name': workflow.name,
+    //      'nodes': workflow.nodes,
+    //      'edges': workflow.edges,
+    //      'tasks': workflow.tasks,
+    //      'taskLinks': workflow.taskLinks || []
+    //    }
+    //  },
+    //  type: 'POST',
+    //  success: function(data, textStatus, jqXHR) {
+    //    return console.log(data);
+    //  },
+    //  error: function(jqXHR, textStatus, errorThrown) {
+    //    console.log(jqXHR);
+    //    return alert(jqXHR.responseText);
+    //  }
+    //});
   });
   return $('#dashboard').click(function() {
     return $.ajax('/php/index.php', {
