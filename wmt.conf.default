@@ -1,35 +1,33 @@
-http {
-	server {
-	    listen       80;
-	    server_name  localhost;
-		set $ROOT "/Users/max/Projects/workflow";
-	    root   $ROOT/pub;
+server {
+    listen       80;
+    server_name  localhost;
+    set $ROOT "/Users/max/Projects/workflow";
+    root   $ROOT/pub;
 
-		access_log /logs/access.log;
-	    error_log  /logs/error.log debug;
+    access_log /var/log/access.log;
+    error_log  /var/log/error.log debug;
 
-	    charset utf-8;
-	    index  index.html index.php;
+    charset utf-8;
+    index  index.html index.php;
 
-	    location ~ /\.(git|svn) {
-			deny all;
-		}
+    location ~ /\.(git|svn) {
+        deny all;
+    }
 
-		location / {
-			try_files $uri $uri/ $uri/index.php;
-			include /usr/local/etc/nginx/mime.types;
-		}
+    location / {
+        try_files $uri $uri/ $uri/index.php;
+        include /etc/nginx/mime.types;
+    }
 
-	    location ~ \.php$ {
-	    	try_files      $uri = 404;
-		    fastcgi_pass   unix:/tmp/php-fpm.sock;
-		    fastcgi_index  index.php;
-		    fastcgi_param  SCRIPT_FILENAME $ROOT/pub/$fastcgi_script_name;
-		    include        fastcgi_params;
-	    }
+    location ~ \.php$ {
+        try_files      $uri = 404;
+        fastcgi_pass   unix:/tmp/php-fpm.sock;
+        fastcgi_index  index.php;
+        fastcgi_param  SCRIPT_FILENAME $ROOT/pub/$fastcgi_script_name;
+        include        fastcgi_params;
+    }
 
-	    location ~ /\.ht {
-			deny  all;
-		}
-	}
+    location ~ /\.ht {
+        deny  all;
+    }
 }
