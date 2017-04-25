@@ -14,10 +14,10 @@ append content
           li
             a#optimise(href="#") Optimise
           li
+            a#optimiseAll(href="#") Optimise all
+          li
             a#execute(href="#") Execute
         ul.nav.navbar-right.navbar-nav
-          li
-            a#dashboard(href="#") Dashboard
           li
             a#newwl(href="#") New workflow
           li
@@ -47,6 +47,20 @@ append content
             li
               a#addTask(href="#") Add task
           ul#libraryOperators.nav.nav-sidebar.hide
+            li
+              a#mpBar(href="#") mp_bar
+            li
+              a#mpPie(href="#") mp_pie
+            li
+              a#mpGeo(href="#") mp_geo
+            li
+              a#rp(href="#") rp
+            li
+              a#ifElse(href="#") if-else
+            li
+              a#gotoL(href="#") gotoL
+            li
+              a#gotoP(href="#") gotoP
             li
               a#WindPeakDetection(href="#") Wind_Peak_Detection
             li
@@ -89,7 +103,11 @@ append content
             div
               textarea#metadataEditor
       div.main.col-md-9.col-md-offset-3
+        div#tabs.container-fluid
+          ul.nav.nav-tabs
         div#wlBoard
+        div#bar.container-fluid
+          div#chartContainer(style="height: 200px; width: 400px;")
 append javascript
   script(src='js/hjson.min.js')
   script(src='js/d3.js')

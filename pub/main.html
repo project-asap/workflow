@@ -18,10 +18,10 @@
           <ul class="nav navbar-right navbar-nav">
             <li><a id="analyse" href="#">Analyse</a></li>
             <li><a id="optimise" href="#">Optimise</a></li>
+            <li><a id="optimiseAll" href="#">Optimise all</a></li>
             <li><a id="execute" href="#">Execute</a></li>
           </ul>
           <ul class="nav navbar-right navbar-nav">
-            <li><a id="dashboard" href="#">Dashboard</a></li>
             <li><a id="newwl" href="#">New workflow</a></li>
             <li><a id="loadwl" href="#">Load workflow</a>
               <input id="uploadfile" type="file" style="display: none;">
@@ -52,6 +52,13 @@
               <li><a id="addTask" href="#">Add task</a></li>
             </ul>
             <ul id="libraryOperators" class="nav nav-sidebar hide">
+              <li><a id="mpBar" href="#">mp_bar</a></li>
+              <li><a id="mpPie" href="#">mp_pie</a></li>
+              <li><a id="mpGeo" href="#">mp_geo</a></li>
+              <li><a id="rp" href="#">rp</a></li>
+              <li><a id="ifElse" href="#">if-else</a></li>
+              <li><a id="gotoL" href="#">gotoL</a></li>
+              <li><a id="gotoP" href="#">gotoP</a></li>
               <li><a id="WindPeakDetection" href="#">Wind_Peak_Detection</a></li>
               <li><a id="WindUserProfiling" href="#">Wind_User_Profiling</a></li>
               <li><a id="WindKmeans" href="#">Wind_Kmeans</a></li>
@@ -85,12 +92,19 @@
           </div>
         </div>
         <div class="main col-md-9 col-md-offset-3">
+          <div id="tabs" class="container-fluid">
+            <ul class="nav nav-tabs"></ul>
+          </div>
           <div id="wlBoard"></div>
+          <div id="bar" class="container-fluid">
+            <div id="chartContainer" style="height: 200px; width: 400px;"></div>
+          </div>
         </div>
       </div>
     </div>
     <script src="js/jquery-1.11.3.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/canvasjs.min.js"></script>
     <script src="js/hjson.min.js"></script>
     <script src="js/d3.js"></script>
     <script src="js/FileSaver.js"></script>

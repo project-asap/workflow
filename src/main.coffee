@@ -16,6 +16,8 @@
 # limitations under the License.
 workflow = null
 
+tabContent = []
+
 nodeSelected = null
 taskSelected = null
 
@@ -24,6 +26,7 @@ node1 = null
 node2 = null
 nodeLink = false
 taskLink = false
+wasExecuted = false
 
 openWorkflow = (w) ->
   workflow = w
@@ -64,6 +67,15 @@ loadFile = ->
   fr.onload = (e) ->
     lines = e.target.result
     newWorkflow = JSON.parse(lines)
+
+    tabContent.push({
+      'name': newWorkflow['name']
+      'wl': newWorkflow
+    })
+    $('#tabs ul li').removeClass('active')
+    lit = '<li class="active"><a href="#">'+newWorkflow['name']+'</a></li>'
+    $('#tabs ul').append(lit)
+
     openWorkflow(newWorkflow)
     $('#uploadfile').replaceWith( $('#uploadfile').clone(true) )
   fr.readAsText(file)
@@ -114,7 +126,7 @@ selectNode = (id, type) ->
     if (!isNaN(parseInt(nodeSelected)))
       oldclass = $('#wlBoard').find('.node'+nodeSelected).attr('class')
       if !!oldclass
-        newclass = oldclass.replace('selected', '');
+        newclass = oldclass.replace('selected', '')
         $('#wlBoard').find('.node'+nodeSelected).attr('class', newclass)
     nodeSelected = id
     oldclass = $('#wlBoard').find('.node'+nodeSelected).attr('class')
@@ -151,6 +163,15 @@ $(document).ready ->
       'edges': []
       'tasks': []
       'taskLinks': []
+
+    tabContent.push({
+      'name': wlName
+      'wl': nw
+    })
+    $('#tabs ul li').removeClass('active')
+    lit = '<li class="active"><a href="#">'+wlName+'</a></li>'
+    $('#tabs ul').append(lit)
+
     openWorkflow(nw)
 
   $('#loadwl').click ->
@@ -268,6 +289,121 @@ $(document).ready ->
       'class': 'circle'
       'operator':
         'constraints':{}
+    tgraph.addNode(task)
+    workflow.tasks.push task
+
+  $('#mpBar').click ->
+    $('#libraryOperators').toggleClass('hide')
+    $('#addTask').parent('li').removeClass('active')
+    taskId = workflow.tasks.length
+    task =
+      'id': taskId
+      'name': 'mp_bar'
+      'nodeId': nodeSelected
+      'operator':
+        'constraints':
+          'input': 'number': 1
+          'output': 'number': 1
+          'opSpecification':
+            'algorithm': 'bar_chart'
+    tgraph.addNode(task)
+    workflow.tasks.push task
+
+  $('#mpPie').click ->
+    $('#libraryOperators').toggleClass('hide')
+    $('#addTask').parent('li').removeClass('active')
+    taskId = workflow.tasks.length
+    task =
+      'id': taskId
+      'name': 'mp_pie'
+      'nodeId': nodeSelected
+      'operator':
+        'constraints':
+          'input': 'number': 1
+          'output': 'number': 1
+          'opSpecification':
+            'algorithm': 'pie_chart'
+    tgraph.addNode(task)
+    workflow.tasks.push task
+
+  $('#mpGeo').click ->
+    $('#libraryOperators').toggleClass('hide')
+    $('#addTask').parent('li').removeClass('active')
+    taskId = workflow.tasks.length
+    task =
+      'id': taskId
+      'name': 'mp_geo'
+      'nodeId': nodeSelected
+      'operator':
+        'constraints':
+          'input': 'number': 1
+          'output': 'number': 1
+          'opSpecification':
+            'algorithm': 'geo_map'
+    tgraph.addNode(task)
+    workflow.tasks.push task
+
+  $('#rp').click ->
+    $('#libraryOperators').toggleClass('hide')
+    $('#addTask').parent('li').removeClass('active')
+    taskId = workflow.tasks.length
+    task =
+      'id': taskId
+      'name': 'rp'
+      'nodeId': nodeSelected
+      'operator':
+        'constraints': {}
+    tgraph.addNode(task)
+    workflow.tasks.push task
+
+  $('#ifElse').click ->
+    $('#libraryOperators').toggleClass('hide')
+    $('#addTask').parent('li').removeClass('active')
+    taskId = workflow.tasks.length
+    task =
+      'id': taskId
+      'name': 'if-else'
+      'nodeId': nodeSelected
+      'operator':
+        'constraints':
+          'input': 'number': 1
+          'output': 'number': 2
+          'opSpecification':
+            'algorithm': 'if-else'
+    tgraph.addNode(task)
+    workflow.tasks.push task
+
+  $('#gotoL').click ->
+    $('#libraryOperators').toggleClass('hide')
+    $('#addTask').parent('li').removeClass('active')
+    taskId = workflow.tasks.length
+    task =
+      'id': taskId
+      'name': 'gotoL'
+      'nodeId': nodeSelected
+      'operator':
+        'constraints':
+          'input': 'number': 1
+          'output': 'number': 2
+          'opSpecification':
+            'algorithm': 'gotoL'
+    tgraph.addNode(task)
+    workflow.tasks.push task
+
+  $('#gotoP').click ->
+    $('#libraryOperators').toggleClass('hide')
+    $('#addTask').parent('li').removeClass('active')
+    taskId = workflow.tasks.length
+    task =
+      'id': taskId
+      'name': 'gotoP'
+      'nodeId': nodeSelected
+      'operator':
+        'constraints':
+          'input': 'number': 1
+          'output': 'number': 1
+          'opSpecification':
+            'algorithm': 'gotoP'
     tgraph.addNode(task)
     workflow.tasks.push task
 
@@ -585,6 +721,28 @@ $(document).ready ->
         console.log(jqXHR)
         alert(jqXHR.responseText)
 
+  $('#optimiseAll').click ->
+    $.ajax '/php/index.php',
+      data:
+        action: 'optimiseAll'
+        workflows: tabContent
+      type: 'POST'
+      success: (data, textStatus, jqXHR) ->
+        console.log(data)
+        $.getJSON data['workflow'], (json) ->
+          $('#tabs ul li').removeClass('active')
+          tabContent.push({
+            'name': json['name']
+            'wl': json
+          })
+          lit = '<li class="active"><a href="#">'+json['name']+'</a></li>'
+          $('#tabs ul').append(lit)
+
+          openWorkflow(json)
+      error: (jqXHR, textStatus, errorThrown) ->
+        console.log(jqXHR)
+        alert(jqXHR.responseText)
+
   $('#execute').click ->
     $.ajax '/php/index.php',
       data:
@@ -612,8 +770,36 @@ $(document).ready ->
       error: (jqXHR, textStatus, errorThrown) ->
         console.log(textStatus)
 
-$.getJSON 'workflows/test_wl.json', (json) ->
-  openWorkflow(json)
+  $('#tabs').on
+    click: ->
+      $('#tabs ul li').removeClass('active')
+      $(this).parent('li').addClass('active')
+      itab = $(this).parent('li').index()
+      openWorkflow(tabContent[itab]['wl'])
+    'ul > li > a'
+
+#$.getJSON 'workflows/test_wl.json', (json) ->
+#  tabContent.push({
+#    'name': json['name']
+#    'wl': json
+#  })
+#  lit = '<li class="active"><a href="#">'+json['name']+'</a></li>'
+#  $('#tabs ul').append(lit)
+#  openWorkflow(json)
+
+showChart = (dpoints) ->
+  chart = new CanvasJS.Chart('chartContainer',
+    {
+      theme: "theme2"
+      title: {text: "mp_bar"}
+      animationEnabled: false
+      data: [{
+        type: "column"
+        dataPoints: dpoints
+        }]
+    })
+
+  chart.render()
 
 graph = new wGraph('#wlBoard')
 

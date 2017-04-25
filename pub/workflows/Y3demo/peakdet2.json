@@ -1,0 +1,752 @@
+{ 
+   "name": "peakdet2",
+   "nodes":[  
+      {  
+         "id":0,
+         "taskIds":[  
+            0
+         ],
+         "name":"cdr",
+         "class":"circle",
+         "x": 100,
+         "y": 200,
+         "fixed": true
+      },
+      {  
+         "id":1,
+         "taskIds":[  
+            1
+         ],
+         "name":"voronoi",
+         "class":"circle",
+         "x": 400,
+         "y": 200,
+         "fixed": true
+      },
+      {  
+         "id":2,
+         "taskIds":[  
+            2
+         ],
+         "name":"result",
+         "class":"circle",
+         "x": 900,
+         "y": 200,
+         "fixed": true
+      },
+      {  
+         "id":3,
+         "taskIds":[  
+            3
+         ],
+         "name":"extract_ts",
+         "x": 200,
+         "y": 200,
+         "fixed": true
+      },
+      {  
+         "id":4,
+         "taskIds":[  
+            4
+         ],
+         "name":"calc_num",
+         "x": 300,
+         "y": 200,
+         "fixed": true
+      },
+      {  
+         "id":5,
+         "taskIds":[  
+            5
+         ],
+         "name":"filter_test",
+         "x": 300,
+         "y": 150,
+         "fixed": true
+      },
+      {  
+         "id":6,
+         "taskIds":[  
+            6
+         ],
+         "name":"filter_train",
+         "x": 300,
+         "y": 250,
+         "fixed": true
+      },
+      {  
+         "id":7,
+         "taskIds":[  
+            7
+         ],
+         "name":"LO_join",
+         "x": 400,
+         "y": 150,
+         "fixed": true
+      },
+      {  
+         "id":8,
+         "taskIds":[  
+            8
+         ],
+         "name":"LO_join",
+         "x": 400,
+         "y": 250,
+         "fixed": true
+      },
+      {  
+         "id":9,
+         "taskIds":[  
+            9
+         ],
+         "name":"filter_reg2",
+         "x": 500,
+         "y": 150,
+         "fixed": true
+      },
+      {  
+         "id":10,
+         "taskIds":[  
+            10
+         ],
+         "name":"filter_reg2",
+         "x": 500,
+         "y": 250,
+         "fixed": true
+      },
+      {  
+         "id":11,
+         "taskIds":[  
+            11
+         ],
+         "name":"calc_test_sum",
+         "x": 600,
+         "y": 150,
+         "fixed": true
+      },
+      {  
+         "id":12,
+         "taskIds":[  
+            12
+         ],
+         "name":"week_aggr",
+         "x": 500,
+         "y": 200,
+         "fixed": true
+      },
+      {  
+         "id":13,
+         "taskIds":[  
+            13
+         ],
+         "name":"calc_train_sum",
+         "x": 600,
+         "y": 250,
+         "fixed": true
+      },
+      {  
+         "id":14,
+         "taskIds":[  
+            14
+         ],
+         "name":"join4",
+         "x": 600,
+         "y": 200,
+         "fixed": true
+      },
+      {  
+         "id":15,
+         "taskIds":[  
+            15
+         ],
+         "name":"calc_ratio",
+         "x": 700,
+         "y": 200,
+         "fixed": true
+      },
+      {  
+         "id":16,
+         "taskIds":[  
+            16
+         ],
+         "name":"filter_peaks",
+         "x": 800,
+         "y": 200,
+         "fixed": true
+      }
+   ],
+   "edges":[  
+      {  
+         "sourceId":0,
+         "targetId":3,
+         "id":0,
+         "class":"dashed"
+      },
+      {  
+         "sourceId":3,
+         "targetId":4,
+         "id":1
+      },
+      {  
+         "sourceId":4,
+         "targetId":5,
+         "id":2
+      },
+      {  
+         "sourceId":4,
+         "targetId":6,
+         "id":3
+      },
+      {  
+         "sourceId":1,
+         "targetId":7,
+         "id":4,
+         "class":"dashed"
+      },
+      {  
+         "sourceId":1,
+         "targetId":8,
+         "id":5,
+         "class":"dashed"
+      },
+      {  
+         "sourceId":5,
+         "targetId":7,
+         "id":6
+      },
+      {  
+         "sourceId":6,
+         "targetId":8,
+         "id":7
+      },
+      {  
+         "sourceId":7,
+         "targetId":9,
+         "id":8
+      },
+      {  
+         "sourceId":8,
+         "targetId":10,
+         "id":9
+      },
+      {  
+         "sourceId":9,
+         "targetId":11,
+         "id":10
+      },
+      {  
+         "sourceId":10,
+         "targetId":12,
+         "id":11
+      },
+      {  
+         "sourceId":10,
+         "targetId":13,
+         "id":12
+      },
+      {  
+         "sourceId":9,
+         "targetId":14,
+         "id":13
+      },
+      {  
+         "sourceId":11,
+         "targetId":14,
+         "id":14
+      },
+      {  
+         "sourceId":12,
+         "targetId":14,
+         "id":15
+      },
+      {  
+         "sourceId":13,
+         "targetId":14,
+         "id":16
+      },
+      {  
+         "sourceId":14,
+         "targetId":15,
+         "id":17
+      },
+      {  
+         "sourceId":15,
+         "targetId":16,
+         "id":18
+      },
+      {  
+         "sourceId":16,
+         "targetId":2,
+         "id":19,
+         "class":"dashed"
+      }
+   ],
+   "tasks":[  
+      {  
+         "id":0,
+         "nodeId":0,
+         "name":"cdr_w_a",
+         "type":"dataset",
+         "class":"circle",
+         "operator":{  
+            "Constraints":{  
+               "Engine":{  
+                  "SQL":"PostgreSQL",
+                  "location":"hdp1.itc.unipi.it"
+               },
+               "type":"SQL"
+            },
+            "Optimization":{"size":"4.50E08"},
+            "Execution":{  
+               "name":"CDR",
+               "schema":"(ID int, TS timestamp, user_id int, aID int)"
+            }
+         }
+      },
+      {  
+         "id":1,
+         "nodeId":1,
+         "name":"voronoi",
+         "type":"dataset",
+         "class":"circle",
+         "operator":{  
+            "Constraints":{  
+               "Engine":{  
+                  "SQL":"PostgreSQL",
+                  "location":"hdp1.itc.unipi.it"
+               },
+               "type":"SQL"
+            },
+            "Optimization":{"size":"4.50E08"},
+            "Execution":{  
+               "name":"VORONOI",
+               "schema":"(rID int, aID int)"
+            }
+         }
+      },
+      {  
+         "id":2,
+         "nodeId":2,
+         "name":"result",
+         "type":"dataset",
+         "class":"circle",
+         "operator":{  
+            "Constraints":{  
+               "Engine":{  
+                  "SQL":"PostgreSQL",
+                  "location":"hdp1.itc.unipi.it"
+               },
+               "type":"SQL"
+            },
+            "Optimization":{"size":"4.50E08"},
+            "Execution":{  
+               "name":"events_filter",
+               "schema":"(rID int, hour int, DOY int, DOW int, ratio float)"
+            }
+         }
+      },
+      {  
+         "id":3,
+         "nodeId":3,
+         "name":"Calc_extractTS",
+         "class":"circle",
+         "operator":{  
+            "Constraints":{
+               "opSpecification":{
+                  "Algorithm":{
+                     "name":"Calc_SQL_query"
+                  }
+               },
+               "Input":{"number":1},
+               "Input0":{"type":"SQL"},
+               "Output":{"number":1},
+               "Output0":{"type":"SQL"}
+            },
+            "Execution":{  
+               "Arguments":{
+                  "number":4
+               },
+               "Argument0":"CDR",
+               "Argument1":"extract(doy from TS) AS DOY, extract(dow from TS) as DOW, extract(hour from TS) as hour",
+               "Argument2":"data_raw",
+               "Argument3":"dbname"
+            }
+         }
+      },
+      {  
+         "id":4,
+         "nodeId":4,
+         "name":"Calc_NUM",
+         "class":"circle",
+         "operator":{  
+            "Constraints":{  
+               "opSpecification":{  
+                  "Algorithm":{  
+                     "name":"Calc_SQL_query"
+                  }
+               },
+               "Input":{"number":1},
+               "Input0":{"type":"SQL"},
+               "Output":{"number":1},
+               "Output0":{"type":"SQL"}
+            },
+            "Execution":{  
+               "Arguments":{  
+                  "number":4
+               },
+               "Argument0":"data_raw GROUP BY hour, DOW, DOY",
+               "Argument1":"count(distinct(user_id)) as NUM",
+               "Argument2":"data",
+               "Argument3":"dbname"
+            }
+         }
+      },
+      {  
+         "id":5,
+         "nodeId":5,
+         "name":"Filter_test_data",
+         "class":"circle",
+         "operator":{  
+            "Constraints":{  
+               "opSpecification":{  
+                  "Algorithm":{  
+                     "name":"Filter_SQL_query"
+                  }
+               },
+               "Input":{"number":1},
+               "Input0":{"type":"SQL"},
+               "Output":{"number":1},
+               "Output0":{"type":"SQL"}
+            },
+            "Execution":{  
+               "Arguments":{  
+                  "number":4
+               },
+               "Argument0":"data",
+               "Argument1":"DOY>=32",
+               "Argument2":"test_data",
+               "Argument3":"dbname"
+            }
+         }
+      },
+      {  
+         "id":6,
+         "nodeId":6,
+         "name":"Filter_training_data",
+         "class":"circle",
+         "operator":{  
+            "Constraints":{  
+               "opSpecification":{  
+                  "Algorithm":{  
+                     "name":"Filter_SQL_query"
+                  }
+               },
+               "Input":{"number":1},
+               "Input0":{"type":"SQL"},
+               "Output":{"number":1},
+               "Output0":{"type":"SQL"}
+            },
+            "Execution":{  
+               "Arguments":{  
+                  "number":4
+               },
+               "Argument0":"data",
+               "Argument1":"DOY>=1 AND DOY <=31",
+               "Argument2":"training_data",
+               "Argument3":"dbname"
+            }
+         }
+      },
+      {  
+         "id":7,
+         "nodeId":7,
+         "name":"LO_join",
+         "class":"circle",
+         "operator":{  
+            "Constraints":{  
+               "opSpecification":{  
+                  "Algorithm":{  
+                     "name":"LO_Join_SQL_query"
+                  }
+               },
+               "Input":{"number":2},
+               "Input0":{"type":"SQL"},
+               "Input1":{"type":"SQL"},
+               "Output":{"number":1},
+               "Output0":{"type":"SQL"}
+            },
+            "Execution":{  
+               "Arguments":{  
+                  "number":4
+               },
+               "Argument0":"test_data",
+               "Argument1":"VORONOI",
+               "Argument2":"test_data.aID = VORONOI.aID",
+               "Argument3":"test_data_wr",
+               "Argument4":"dbname"
+            }
+         }
+      },
+      {  
+         "id":8,
+         "nodeId":8,
+         "name":"LO_Join",
+         "class":"circle",
+         "operator":{  
+            "Constraints":{  
+               "opSpecification":{  
+                  "Algorithm":{  
+                     "name":"Join_SQL_query"
+                  }
+               },
+               "Input":{"number":2},
+               "Input0":{"type":"SQL"},
+               "Input1":{"type":"SQL"},
+               "Output":{"number":1},
+               "Output0":{"type":"SQL"}
+            },
+            "Execution":{  
+               "Arguments":{  
+                  "number":4
+               },
+               "Argument0":"training_data",
+               "Argument1":"VORONOI",
+               "Argument2":"training_data.aID = VORONOI.aID",
+               "Argument3":"training_data_wr",
+               "Argument4":"dbname"
+            }
+         }
+      },
+      {  
+         "id":9,
+         "nodeId":9,
+         "name":"filter_region2",
+         "class":"circle",
+         "operator":{  
+            "Constraints":{  
+               "opSpecification":{  
+                  "Algorithm":{  
+                     "name":"Filter_SQL_query"
+                  }
+               },
+               "Input":{"number":1},
+               "Input0":{"type":"SQL"},
+               "Output":{"number":1},
+               "Output0":{"type":"SQL"}
+            },
+            "Execution":{  
+               "Arguments":{  
+                  "number":4
+               },
+               "Argument0":"test_data_wr",
+               "Argument1":"rID IN (2,3,4)",
+               "Argument2":"test_data",
+               "Argument3":"dbname"
+            }
+         }
+      },
+      {  
+         "id":10,
+         "nodeId":10,
+         "name":"filter_region2",
+         "class":"circle",
+         "operator":{  
+            "Constraints":{  
+               "opSpecification":{  
+                  "Algorithm":{  
+                     "name":"Filter_SQL_query"
+                  }
+               },
+               "Input":{"number":1},
+               "Input0":{"type":"SQL"},
+               "Output":{"number":1},
+               "Output0":{"type":"SQL"}
+            },
+            "Execution":{  
+               "Arguments":{  
+                  "number":4
+               },
+               "Argument0":"training_data_wr",
+               "Argument1":"rID IN (2,3,4)",
+               "Argument2":"training_data",
+               "Argument3":"dbname"
+            }
+         }
+      },
+      {  
+         "id":11,
+         "nodeId":11,
+         "name":"Calc_test_sumNUM",
+         "class":"circle",
+         "operator":{  
+            "Constraints":{  
+               "opSpecification":{  
+                  "Algorithm":{  
+                     "name":"Calc_SQL_query"
+                  }
+               },
+               "Input":{"number":1},
+               "Input0":{"type":"SQL"},
+               "Output":{"number":1},
+               "Output0":{"type":"SQL"}
+            },
+            "Execution":{  
+               "Arguments":{  
+                  "number":4
+               },
+               "Argument0":"test_data GROUP BY DOY, DOW",
+               "Argument1":"sum(NUM) as NUM",
+               "Argument2":"am",
+               "Argument3":"dbname"
+            }
+         }
+      },
+      {  
+         "id":12,
+         "nodeId":12,
+         "name":"Calc_training_avgNUM",
+         "class":"circle",
+         "operator":{  
+            "Constraints":{  
+               "opSpecification":{  
+                  "Algorithm":{  
+                     "name":"Calc_SQL_query"
+                  }
+               },
+               "Input":{"number":1},
+               "Input0":{"type":"SQL"},
+               "Output":{"number":1},
+               "Output0":{"type":"SQL"}
+            },
+            "Execution":{  
+               "Arguments":{  
+                  "number":4
+               },
+               "Argument0":"training_data GROUP BY rid, hour, DOW",
+               "Argument1":"avg(NUM) as NUM",
+               "Argument2":"cp_base",
+               "Argument3":"dbname"
+            }
+         }
+      },
+      {  
+         "id":13,
+         "nodeId":13,
+         "name":"Calc_cpbase_sumNUM",
+         "class":"circle",
+         "operator":{  
+            "Constraints":{  
+               "opSpecification":{  
+                  "Algorithm":{  
+                     "name":"Calc_SQL_query"
+                  }
+               },
+               "Input":{"number":1},
+               "Input0":{"type":"SQL"},
+               "Output":{"number":1},
+               "Output0":{"type":"SQL"}
+            },
+            "Execution":{  
+               "Arguments":{  
+                  "number":4
+               },
+               "Argument0":"cp_base GROUP BY DOW",
+               "Argument1":"sum(NUM) as NUM",
+               "Argument2":"bm",
+               "Argument3":"dbname"
+            }
+         }
+      },
+      {  
+         "id":14,
+         "nodeId":14,
+         "name":"join4",
+         "class":"circle",
+         "operator":{  
+            "Constraints":{  
+               "opSpecification":{  
+                  "Algorithm":{  
+                     "name":"MultiJoin_SQL_query"
+                  }
+               },
+               "Input":{"number":4},
+               "Input0":{"type":"SQL"},
+               "Input1":{"type":"SQL"},
+               "Input2":{"type":"SQL"},
+               "Input3":{"type":"SQL"},
+               "Output":{"number":1},
+               "Output0":{"type":"SQL"}
+            },
+            "Execution":{  
+               "Arguments":{  
+                  "number":5
+               },
+               "Argument0":"test_data a, cp_base b, am, bm",
+               "Argument1":"a.rid = b.rid and a.hour = b.hour and a.dow = b.dow and b.dow= bm.dow and a.doy = am.doy",
+               "Argument3":"a.rid, a.hour, a.doy, a.dow, a.num as anum, b.num as bnum",
+               "Argument2":"big_join",
+               "Argument4":"dbname"
+            }
+         }
+      },
+      {  
+         "id":15,
+         "nodeId":15,
+         "name":"Calc_ratio",
+         "class":"circle",
+         "operator":{  
+            "Constraints":{  
+               "opSpecification":{  
+                  "Algorithm":{  
+                     "name":"Calc_SQL_query"
+                  }
+               },
+               "Input":{"number":1},
+               "Input0":{"type":"SQL"},
+               "Output":{"number":1},
+               "Output0":{"type":"SQL"}
+            },
+            "Execution":{  
+               "Arguments":{  
+                  "number":4
+               },
+               "Argument0":"big_join",
+               "Argument1":"(anum/am.num)/(bnum/bm.num)-1.0 as ratio",
+               "Argument2":"events",
+               "Argument3":"dbname"
+            }
+         }
+      },
+      {  
+         "id":16,
+         "nodeId":16,
+         "name":"Filter_ratio",
+         "class":"circle",
+         "operator":{  
+            "Constraints":{  
+               "opSpecification":{  
+                  "Algorithm":{  
+                     "name":"Filter_SQL_query"
+                  }
+               },
+               "Input":{"number":1},
+               "Input0":{"type":"SQL"},
+               "Output":{"number":1},
+               "Output0":{"type":"SQL"}
+            },
+            "Execution":{  
+               "Arguments":{  
+                  "number":4
+               },
+               "Argument0":"events",
+               "Argument1":"(abs(ratio)>=0.2 AND abs(anum-bnum)>=50)",
+               "Argument2":"events_filter",
+               "Argument3":"dbname"
+            }
+         }
+      }
+   ],
+   "taskLinks":[  
+
+   ]
+}

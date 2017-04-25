@@ -1,5 +1,5 @@
 {
-  "name": "test_wl",
+  "name": "if_then_else_demo",
   "nodes": [
     {
       "id": 0,
@@ -21,7 +21,7 @@
     {
       "id": 2,
       "taskIds": [2],
-      "name": "k-means",
+      "name": "if_then_else",
       "x": 400,
       "y": 200,
       "fixed": true
@@ -29,10 +29,35 @@
     {
       "id": 3,
       "taskIds": [3],
+      "name": "k-means1",
+      "x": 550,
+      "y": 150,
+      "fixed": true
+    },
+    {
+      "id": 4,
+      "taskIds": [4],
       "name": "result",
       "class": "circle",
+      "x": 700,
+      "y": 150,
+      "fixed": true
+    },
+    {
+      "id": 5,
+      "taskIds": [5],
+      "name": "k-means2",
       "x": 550,
-      "y": 200,
+      "y": 250,
+      "fixed": true
+    },
+    {
+      "id": 6,
+      "taskIds": [6],
+      "name": "result",
+      "class": "circle",
+      "x": 700,
+      "y": 250,
       "fixed": true
     }
   ],
@@ -51,7 +76,23 @@
     {
       "id": 2,
       "sourceId": 2,
-      "targetId": 3,
+      "targetId": 3
+    },
+    {
+      "id": 3,
+      "sourceId": 3,
+      "targetId": 4,
+      "class": "dashed"
+    },
+    {
+      "id": 4,
+      "sourceId": 2,
+      "targetId": 5
+    },
+    {
+      "id": 5,
+      "sourceId": 5,
+      "targetId": 6,
       "class": "dashed"
     }
   ],
@@ -83,7 +124,7 @@
           "output": "1",
           "output0": "arffDataset",
           "opSpecification": {
-            "algorithm": "tfidf_map"
+            "algorithm":  {"name": "TF_IDF"}
           }
         },
         "execution": {
@@ -92,7 +133,7 @@
           },
           "argument0": "In0.path",
           "argument1": "$HDFS_OP_DIR/tfidf",
-          "argument2": "0.01"
+          "argument2": "1"
         },
         "engine":{"fs":"hdfs"},
         "schema":{
@@ -104,7 +145,30 @@
     {
       "id": 2,
       "nodeId": 2,
-      "name": "k-means",
+      "name": "if_then_else",
+      "operator": {
+        "constraints": {
+          "input": "1",
+          "output": "2",
+          "opSpecification": {
+            "algorithm":  {"name": "if_then_else_vecsize"}
+          }
+        },
+        "execution": {
+          "arguments": {
+            "number": 3
+          },
+          "argument0": "In0.path",
+          "argument1": "$HDFS_OP_DIR/vecsize",
+          "argument2": "100"
+        },
+        "engine":{"fs":"hdfs"}
+      }
+    },
+    {
+      "id": 3,
+      "nodeId": 3,
+      "name": "k-means1",
       "operator": {
         "constraints": {
           "input": "1",
@@ -112,7 +176,7 @@
           "output": "1",
           "output0": "textFile",
           "opSpecification": {
-            "algorithm": "kmeans"
+            "algorithm": {"name": "k-means1"}
           }
         },
         "execution": {
@@ -121,7 +185,7 @@
           },
           "argument0": "In0.path",
           "argument1": "$HDFS_OP_DIR/kmeans",
-          "argument2": "2",
+          "argument2": "5",
           "argument3": "25"
         },
         "engine":{"fs":"hdfs"},
@@ -132,8 +196,51 @@
       }
     },
     {
-      "id": 3,
-      "nodeId": 3,
+      "id": 4,
+      "nodeId": 4,
+      "name": "result",
+      "type": "dataset",
+      "operator": {
+        "constraints": {
+        },
+        "engine": {
+          "fs": "hdfs"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "nodeId": 5,
+      "name": "k-means2",
+      "operator": {
+        "constraints": {
+          "input": "1",
+          "input0": "arffDataset",
+          "output": "1",
+          "output0": "textFile",
+          "opSpecification": {
+            "algorithm": {"name": "k-means2"}
+          }
+        },
+        "execution": {
+          "arguments": {
+            "number": 3
+          },
+          "argument0": "In0.path",
+          "argument1": "$HDFS_OP_DIR/kmeans",
+          "argument2": "10",
+          "argument3": "30"
+        },
+        "engine":{"fs":"hdfs"},
+        "schema":{
+          "input": ["field1", "field2"],
+          "output": ["field1", "field2", "field3"]
+        }
+      }
+    },
+    {
+      "id": 6,
+      "nodeId": 6,
       "name": "result",
       "type": "dataset",
       "operator": {

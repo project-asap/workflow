@@ -30,17 +30,28 @@ class Workflow:
     WLibrary = '../workflows/'
 
     def __init__(self, fname):
+        self.name = 'workflow'
+        self.nodes = []
+        self.edges = []
+        self.tasks = []
+        self.taskLinks = []
         if not os.path.exists(fname):
-            print 'ERROR: File '+fname+' was not found!'
-            sys.exit(0)
+            print 'WARN: File '+fname+' was not found! Empty workflow has created'
+            # sys.exit(0)
+            return
         fl = open(fname, 'r')
         wl = yaml.safe_load(fl)
         fl.close()
-        self.name = wl['name'] if 'name' in wl else 'workflow'
-        self.nodes = wl['nodes'] if 'nodes' in wl else []
-        self.edges = wl['edges'] if 'edges' in wl else []
-        self.tasks = wl['tasks'] if 'tasks' in wl else []
-        self.taskLinks = wl['taskLinks'] if 'taskLinks' in wl else []
+        if 'name' in wl:
+            self.name = wl['name']
+        if 'nodes' in wl:
+            self.nodes = wl['nodes']
+        if 'edges' in wl:
+            self.edges = wl['edges']
+        if 'tasks' in wl:
+            self.tasks = wl['tasks']
+        if 'taskLinks' in wl:
+            self.taskLinks = wl['taskLinks']
 
     def __repr__(self):
         return json.dumps({
@@ -806,6 +817,32 @@ class Workflow:
         file.close()
         return os.path.join(self.WLibrary, fname)
 
+    def removeEdge(self, i, j):
+        for eid, edge in self.edges:
+            if edge['sourceId'] == i and edge['targetId'] == j:
+                self.edges.pop(eid)
+                self.findNode(i)['successors'].remove(j)
+                self.findNode(j)['predecessors'].remove(i)
+                break
+
+    def removeNode(self, i):
+        for nid, node in self.nodes:
+            if node['id'] == i:
+                self.nodes.pop(nid)
+                break
+
+    def addNode(self, node):
+        self.nodes.append(node)
+
+    def addTask(self, task):
+        self.tasks.append(task)
+
+    def addEdge(self, edge):
+        self.edges.append(edge)
+        i = edge['sourceId']
+        j = edge['targetId']
+        self.findNode(i)['successors'].append(j)
+        self.findNode(j)['predecessors'].append(i)
 
 def dict2text(indict, pre=None):
     if isinstance(indict, dict):

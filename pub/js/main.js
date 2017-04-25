@@ -1,6 +1,8 @@
-var addingLink, findTask, graph, loadFile, node1, node2, nodeLink, nodeSelected, openWorkflow, selectNode, showTasks, taskLink, taskSelected, tgraph, workflow;
+var addingLink, findTask, graph, loadFile, node1, node2, nodeLink, nodeSelected, openWorkflow, selectNode, showChart, showTasks, tabContent, taskLink, taskSelected, tgraph, wasExecuted, workflow;
 
 workflow = null;
+
+tabContent = [];
 
 nodeSelected = null;
 
@@ -15,6 +17,8 @@ node2 = null;
 nodeLink = false;
 
 taskLink = false;
+
+wasExecuted = false;
 
 openWorkflow = function(w) {
   var edge, k, l, len, len1, node, ref, ref1;
@@ -73,9 +77,16 @@ loadFile = function() {
   file = input.files[0];
   fr = new FileReader();
   fr.onload = function(e) {
-    var lines, newWorkflow;
+    var lines, lit, newWorkflow;
     lines = e.target.result;
     newWorkflow = JSON.parse(lines);
+    tabContent.push({
+      'name': newWorkflow['name'],
+      'wl': newWorkflow
+    });
+    $('#tabs ul li').removeClass('active');
+    lit = '<li class="active"><a href="#">' + newWorkflow['name'] + '</a></li>';
+    $('#tabs ul').append(lit);
     openWorkflow(newWorkflow);
     return $('#uploadfile').replaceWith($('#uploadfile').clone(true));
   };
@@ -169,7 +180,7 @@ selectNode = function(id, type) {
 
 $(document).ready(function() {
   $('#newwl').click(function() {
-    var nw, wlName;
+    var lit, nw, wlName;
     wlName = prompt('Please enter workflow name', '');
     nw = {
       'name': wlName,
@@ -178,6 +189,13 @@ $(document).ready(function() {
       'tasks': [],
       'taskLinks': []
     };
+    tabContent.push({
+      'name': wlName,
+      'wl': nw
+    });
+    $('#tabs ul li').removeClass('active');
+    lit = '<li class="active"><a href="#">' + wlName + '</a></li>';
+    $('#tabs ul').append(lit);
     return openWorkflow(nw);
   });
   $('#loadwl').click(function() {
@@ -329,6 +347,178 @@ $(document).ready(function() {
       'class': 'circle',
       'operator': {
         'constraints': {}
+      }
+    };
+    tgraph.addNode(task);
+    return workflow.tasks.push(task);
+  });
+  $('#mpBar').click(function() {
+    var task, taskId;
+    $('#libraryOperators').toggleClass('hide');
+    $('#addTask').parent('li').removeClass('active');
+    taskId = workflow.tasks.length;
+    task = {
+      'id': taskId,
+      'name': 'mp_bar',
+      'nodeId': nodeSelected,
+      'operator': {
+        'constraints': {
+          'input': {
+            'number': 1
+          },
+          'output': {
+            'number': 1
+          },
+          'opSpecification': {
+            'algorithm': 'bar_chart'
+          }
+        }
+      }
+    };
+    tgraph.addNode(task);
+    return workflow.tasks.push(task);
+  });
+  $('#mpPie').click(function() {
+    var task, taskId;
+    $('#libraryOperators').toggleClass('hide');
+    $('#addTask').parent('li').removeClass('active');
+    taskId = workflow.tasks.length;
+    task = {
+      'id': taskId,
+      'name': 'mp_pie',
+      'nodeId': nodeSelected,
+      'operator': {
+        'constraints': {
+          'input': {
+            'number': 1
+          },
+          'output': {
+            'number': 1
+          },
+          'opSpecification': {
+            'algorithm': 'pie_chart'
+          }
+        }
+      }
+    };
+    tgraph.addNode(task);
+    return workflow.tasks.push(task);
+  });
+  $('#mpGeo').click(function() {
+    var task, taskId;
+    $('#libraryOperators').toggleClass('hide');
+    $('#addTask').parent('li').removeClass('active');
+    taskId = workflow.tasks.length;
+    task = {
+      'id': taskId,
+      'name': 'mp_geo',
+      'nodeId': nodeSelected,
+      'operator': {
+        'constraints': {
+          'input': {
+            'number': 1
+          },
+          'output': {
+            'number': 1
+          },
+          'opSpecification': {
+            'algorithm': 'geo_map'
+          }
+        }
+      }
+    };
+    tgraph.addNode(task);
+    return workflow.tasks.push(task);
+  });
+  $('#rp').click(function() {
+    var task, taskId;
+    $('#libraryOperators').toggleClass('hide');
+    $('#addTask').parent('li').removeClass('active');
+    taskId = workflow.tasks.length;
+    task = {
+      'id': taskId,
+      'name': 'rp',
+      'nodeId': nodeSelected,
+      'operator': {
+        'constraints': {}
+      }
+    };
+    tgraph.addNode(task);
+    return workflow.tasks.push(task);
+  });
+  $('#ifElse').click(function() {
+    var task, taskId;
+    $('#libraryOperators').toggleClass('hide');
+    $('#addTask').parent('li').removeClass('active');
+    taskId = workflow.tasks.length;
+    task = {
+      'id': taskId,
+      'name': 'if-else',
+      'nodeId': nodeSelected,
+      'operator': {
+        'constraints': {
+          'input': {
+            'number': 1
+          },
+          'output': {
+            'number': 2
+          },
+          'opSpecification': {
+            'algorithm': 'if-else'
+          }
+        }
+      }
+    };
+    tgraph.addNode(task);
+    return workflow.tasks.push(task);
+  });
+  $('#gotoL').click(function() {
+    var task, taskId;
+    $('#libraryOperators').toggleClass('hide');
+    $('#addTask').parent('li').removeClass('active');
+    taskId = workflow.tasks.length;
+    task = {
+      'id': taskId,
+      'name': 'gotoL',
+      'nodeId': nodeSelected,
+      'operator': {
+        'constraints': {
+          'input': {
+            'number': 1
+          },
+          'output': {
+            'number': 2
+          },
+          'opSpecification': {
+            'algorithm': 'gotoL'
+          }
+        }
+      }
+    };
+    tgraph.addNode(task);
+    return workflow.tasks.push(task);
+  });
+  $('#gotoP').click(function() {
+    var task, taskId;
+    $('#libraryOperators').toggleClass('hide');
+    $('#addTask').parent('li').removeClass('active');
+    taskId = workflow.tasks.length;
+    task = {
+      'id': taskId,
+      'name': 'gotoP',
+      'nodeId': nodeSelected,
+      'operator': {
+        'constraints': {
+          'input': {
+            'number': 1
+          },
+          'output': {
+            'number': 1
+          },
+          'opSpecification': {
+            'algorithm': 'gotoP'
+          }
+        }
       }
     };
     tgraph.addNode(task);
@@ -851,6 +1041,33 @@ $(document).ready(function() {
       }
     });
   });
+  $('#optimiseAll').click(function() {
+    return $.ajax('/php/index.php', {
+      data: {
+        action: 'optimiseAll',
+        workflows: tabContent
+      },
+      type: 'POST',
+      success: function(data, textStatus, jqXHR) {
+        console.log(data);
+        return $.getJSON(data['workflow'], function(json) {
+          var lit;
+          $('#tabs ul li').removeClass('active');
+          tabContent.push({
+            'name': json['name'],
+            'wl': json
+          });
+          lit = '<li class="active"><a href="#">' + json['name'] + '</a></li>';
+          $('#tabs ul').append(lit);
+          return openWorkflow(json);
+        });
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR);
+        return alert(jqXHR.responseText);
+      }
+    });
+  });
   $('#execute').click(function() {
     return $.ajax('/php/index.php', {
       data: {
@@ -873,7 +1090,7 @@ $(document).ready(function() {
       }
     });
   });
-  return $('#dashboard').click(function() {
+  $('#dashboard').click(function() {
     return $.ajax('/php/index.php', {
       data: {
         action: 'get_list'
@@ -887,11 +1104,34 @@ $(document).ready(function() {
       }
     });
   });
+  return $('#tabs').on({
+    click: function() {
+      var itab;
+      $('#tabs ul li').removeClass('active');
+      $(this).parent('li').addClass('active');
+      itab = $(this).parent('li').index();
+      return openWorkflow(tabContent[itab]['wl']);
+    }
+  }, 'ul > li > a');
 });
 
-$.getJSON('workflows/test_wl.json', function(json) {
-  return openWorkflow(json);
-});
+showChart = function(dpoints) {
+  var chart;
+  chart = new CanvasJS.Chart('chartContainer', {
+    theme: "theme2",
+    title: {
+      text: "mp_bar"
+    },
+    animationEnabled: false,
+    data: [
+      {
+        type: "column",
+        dataPoints: dpoints
+      }
+    ]
+  });
+  return chart.render();
+};
 
 graph = new wGraph('#wlBoard');
 

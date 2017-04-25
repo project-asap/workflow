@@ -1,5 +1,5 @@
 {
-  "name": "test_wl",
+  "name": "rp_mp_demo",
   "nodes": [
     {
       "id": 0,
@@ -21,7 +21,7 @@
     {
       "id": 2,
       "taskIds": [2],
-      "name": "k-means",
+      "name": "rp",
       "x": 400,
       "y": 200,
       "fixed": true
@@ -29,9 +29,25 @@
     {
       "id": 3,
       "taskIds": [3],
+      "name": "k-means",
+      "x": 550,
+      "y": 200,
+      "fixed": true
+    },
+    {
+      "id": 4,
+      "taskIds": [4],
+      "name": "mp_bar",
+      "x": 700,
+      "y": 200,
+      "fixed": true
+    },
+    {
+      "id": 5,
+      "taskIds": [5],
       "name": "result",
       "class": "circle",
-      "x": 550,
+      "x": 850,
       "y": 200,
       "fixed": true
     }
@@ -51,7 +67,17 @@
     {
       "id": 2,
       "sourceId": 2,
-      "targetId": 3,
+      "targetId": 3
+    },
+    {
+      "id": 3,
+      "sourceId": 3,
+      "targetId": 4
+    },
+    {
+      "id": 4,
+      "sourceId": 4,
+      "targetId": 5,
       "class": "dashed"
     }
   ],
@@ -83,7 +109,7 @@
           "output": "1",
           "output0": "arffDataset",
           "opSpecification": {
-            "algorithm": "tfidf_map"
+            "algorithm": {"name": "TF_IDF"}
           }
         },
         "execution": {
@@ -92,7 +118,7 @@
           },
           "argument0": "In0.path",
           "argument1": "$HDFS_OP_DIR/tfidf",
-          "argument2": "0.01"
+          "argument2": "1"
         },
         "engine":{"fs":"hdfs"},
         "schema":{
@@ -104,6 +130,15 @@
     {
       "id": 2,
       "nodeId": 2,
+      "name": "rp",
+      "operator": {
+        "constraints": {
+        }
+      }
+    },
+    {
+      "id": 3,
+      "nodeId": 3,
       "name": "k-means",
       "operator": {
         "constraints": {
@@ -112,7 +147,7 @@
           "output": "1",
           "output0": "textFile",
           "opSpecification": {
-            "algorithm": "kmeans"
+            "algorithm": {"name": "k-means"}
           }
         },
         "execution": {
@@ -121,7 +156,7 @@
           },
           "argument0": "In0.path",
           "argument1": "$HDFS_OP_DIR/kmeans",
-          "argument2": "2",
+          "argument2": "3",
           "argument3": "25"
         },
         "engine":{"fs":"hdfs"},
@@ -132,8 +167,20 @@
       }
     },
     {
-      "id": 3,
-      "nodeId": 3,
+      "id": 4,
+      "nodeId": 4,
+      "name": "mp_bar",
+      "operator": {
+        "constraints": {
+          "opSpecification": {
+            "algorithm": "bar_chart"
+          }
+        }
+      }
+    },
+    {
+      "id": 5,
+      "nodeId": 5,
       "name": "result",
       "type": "dataset",
       "operator": {
